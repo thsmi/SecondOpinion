@@ -6,4 +6,5 @@ pref("extensions.secondopinion.cache", true);
 pref("extensions.secondopinion.obfuscate", true);
 pref("extensions.secondopinion.excluded", "Blueliv;Quttera");
 pref("extensions.secondopinion.loglevel", 0);
+pref("extensions.secondopinion.termsofservice", false);
 

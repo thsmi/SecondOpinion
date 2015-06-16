@@ -22,6 +22,8 @@
 //  * make scan engine blacklist configurable.
 //
 //  * progressbar while scanning...
+//
+//  * Collect reports in background
 
 
 var secondOpinion = {

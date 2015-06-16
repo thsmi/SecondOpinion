@@ -31,12 +31,20 @@ if (!net.tschmid.secondopinion.ui)
       this.getUrlApi().load(); 
       this.getContextUi().load();      
       
+      let settings = net.tschmid.secondopinion.settings;
+      let links = net.tschmid.secondopinion.ui.links;
+      if (settings.isAwareOfTermsOfService())
+        return
+        
+      links.openUrlInTab("https://www.virustotal.com/en/about/terms-of-service/");
+      settings.setAwareOfTermsOfService(); 
+      
     },
 
     unload : function() { 
       this.getFileApi().unload();
       this.getUrlApi().unload();
-      this.getContextUi().unload();
+      this.getContextUi().unload();     
     },
     
     // Implement the Message Listener interfaces. It notifies 

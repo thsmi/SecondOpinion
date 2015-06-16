@@ -62,6 +62,22 @@ if (!net.tschmid.secondopinion)
       				  
   	  return pref.getBoolPref("extensions.secondopinion.cache");
     },
+    
+    isAwareOfTermsOfService : function() {
+      let pref = Cc["@mozilla.org/preferences-service;1"]
+  	              .getService(Ci.nsIPrefBranch)
+      				  
+  	  return pref.getBoolPref("extensions.secondopinion.termsofservice");
+    },
+    
+    setAwareOfTermsOfService : function() {
+      
+      let pref = Cc["@mozilla.org/preferences-service;1"]
+  	              .getService(Ci.nsIPrefBranch)
+      				  
+  	  return pref.setBoolPref("extensions.secondopinion.termsofservice", true);      
+      
+    },   
 	
 	  getLogLevel : function() {
 		
