@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+
+<!DOCTYPE wizard SYSTEM "chrome://secondopinion/locale/secondopinion.dtd">
+
+<wizard  title="&secondopinion.upload.title;"
+  id="UploadWizard"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+		buttons="cancel"
+		hideback="true"
+        ondialogcancel="return doCancel();"	>
+
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.settings.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.logger.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.request.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.reports.js"/> 
+  <script type="application/x-javascript" src="chrome://secondopinion/content/virustotal.file.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.attachment.js"/>
+    
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.link.js"/>
+
+  <script type="application/x-javascript" src="chrome://secondopinion/content/uploader.js"/>
+  
+	  <wizardpage label="Privacy Notice"  pack="center">
+	     <description style="white-space: pre-line;" >&secondopinion.upload.privacy.content;</description>
+	  </wizardpage>
+
+	  <wizardpage label="&secondopinion.upload.uploading.title;" pack="center" onpageshow="startUpload();">
+	    <vbox>
+		  <description style="white-space: pre-line;">&secondopinion.upload.uploading.content;</description>
+          <separator/><separator/>
+          <progressmeter id="secondOpinionUploadProgress" mode="undetermined"/>
+	      <separator/>
+	      <description id="status" >
+		</description>
+		</vbox>
+	  </wizardpage>
+
+	  <wizardpage label="&secondopinion.upload.finished.title;" pack="center" >
+	     <description style="white-space: pre-line;">&secondopinion.upload.finished.content;</description>
+		 <separator/>
+	  	 <description id="status2" class="msgNotificaton-smallText text-link" />
+	  </wizardpage>
+</wizard>
+
+
+

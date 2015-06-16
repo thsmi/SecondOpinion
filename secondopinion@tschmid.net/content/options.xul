@@ -1,0 +1,30 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE vbox SYSTEM "chrome://secondopinion/locale/secondopinion.dtd">
+
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <setting pref="extensions.secondopinion.apikey.type" 
+           type="radio" title="&secondopinion.apikey.type;"
+		   desc="&secondopinion.apikey.type.desc;">
+    <radiogroup>
+      <radio value="0" label="&secondopinion.apikey.type.public;"/>
+      <radio value="1" label="&secondopinion.apikey.type.private;"/>
+    </radiogroup>
+  </setting>
+  
+  <setting pref="extensions.secondopinion.apikey.private" 
+           type="string" title="&secondopinion.apikey.private;" 
+		   desc="&secondopinion.apikey.private.desc;"/>
+		   
+  <setting pref="extensions.secondopinion.cache" 
+           type="bool" title="&secondopinion.cache;" 
+		   desc="&secondopinion.cache.desc;" />
+  <setting pref="extensions.secondopinion.obfuscate" 
+           type="bool" title="&secondopinion.obfuscate;"
+		   desc="&secondopinion.obfuscate.desc;" />
+       
+  <setting pref="extensions.secondopinion.excluded" 
+           type="string" title="Engines to exclude" 
+		   desc="A semicolon separated list with engine names which should be ignored. "/>       
+</vbox>

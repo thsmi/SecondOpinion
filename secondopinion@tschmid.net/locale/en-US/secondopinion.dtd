@@ -1,0 +1,54 @@
+<!ENTITY secondopinion.warning.header   "VirusTotal.com indicates this message contains dangerous attachments">
+<!ENTITY secondopinion.warning.detail   "Click to show scan report...">
+<!ENTITY secondopinion.warning.hide     "Hide">
+
+<!ENTITY secondopinion.attachment.scan  "Scan on VirusTotal.com" >
+<!ENTITY secondopinion.attachments.scan "Scan all on VirusTotal.com" >
+
+<!ENTITY secondopinion.attachment.open "View on VirusTotal.com" >
+
+<!ENTITY secondopinion.report.header    "VirusTotal.com Scan Reports" >
+
+<!ENTITY secondopinion.link.open "View on VirusTotal.com" >
+
+<!ENTITY secondopinion.apikey.type "Api key" >
+<!ENTITY secondopinion.apikey.type.desc 
+"A 'api key' is used to access the services at VirusTotal.com. The key defines how many request per minute are possible." >
+<!ENTITY secondopinion.apikey.type.private "use my private api key" >
+<!ENTITY secondopinion.apikey.type.public "use public api key">
+
+<!ENTITY secondopinion.apikey.private "Private api key" >
+<!ENTITY secondopinion.apikey.private.desc 
+"You can can request a private api key for free at VirusTotal.com. Such a key offers a higher request rate and priority." >
+
+<!ENTITY secondopinion.cache "Cache response">
+<!ENTITY secondopinion.cache.desc "Often viruses are received multiple times. In order to avoid unnecessary request, positive results are cached in a local database. ">
+
+<!ENTITY secondopinion.obfuscate "Obfuscate filenames" >
+<!ENTITY secondopinion.obfuscate.desc "Some phishing and viruses use personalized filenames. So you may want to obfuscate the filename before uploading it to VirusTotal.com" >
+
+
+<!ENTITY secondopinion.upload.title "VirusTotal.com file upload" > 
+<!ENTITY secondopinion.upload.privacy.header "VirusTotal.com file upload" > 
+<!ENTITY secondopinion.upload.privacy.content 
+"You are about to upload data to VirusTotal.com
+
+
+Keep in mind, all Files sent to VirusTotal.com will be shared with antivirus vendors and security companies so as to help them in improving their services and products.
+
+
+Continue if and only if you are really sure, you upload does not contain any private data." > 
+
+<!ENTITY secondopinion.upload.uploading.title "Uploading Attachment to VirusTotal.com" >
+<!ENTITY secondopinion.upload.uploading.content
+"The upload may take some time, it depends on the attachment size, your internet connection as well as the current load at VirusTotal.com.
+
+Keep in mind in case at least one scanner rates the attachment as threat it will be sent to all those scanners that do not detect the resource." >
+
+<!ENTITY secondopinion.upload.finished.title "Completed Upload" >
+<!ENTITY secondopinion.upload.finished.content
+"The attachment has been uploaded to VirusTotal.com
+
+It will be checked by more than 50 virus scanners. But keep in mind it may take several hours until a file is processed by all scanners and the final report is available.
+
+Click on the link below to check the scan status:" >

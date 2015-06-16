@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://secondopinion/locale/secondopinion.dtd">
+
+<overlay  id="secondOpinionMailWindowOverlay"
+          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <menupopup id="mailContext">
+    <menuitem id="secondOptinionViewUrl"
+	          insertbefore="mailContext-reportPhishingURL"
+              label="&secondopinion.link.open;" />  
+  </menupopup>  
+</overlay>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://secondopinion/skin/overlay.css" type="text/css"?>
+
+<!DOCTYPE overlay SYSTEM "chrome://secondopinion/locale/secondopinion.dtd">
+
+<overlay id="secondOpinionMsgHeaderViewOverlay" 
+         xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.logger.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.settings.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.request.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.reports.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/virustotal.file.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/virustotal.url.js"/>
+  <!--<script type="application/x-javascript" src="chrome://secondopinion/content/virustotal.domain.js"/>-->
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.link.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.messages.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.response.js"/>
+  
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.url.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common.attachment.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.file.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.contextmenu.js"/>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.init.js"/>
+  
+  <!-- <script type="application/x-javascript" src="chrome://secondopinion/content/ui.email.js"/>-->
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/overlay.js"/>
+ 
+   <vbox id="messagepanebox">
+	<vbox  id="secondOpinionBar" insertafter="msgNotificationBar" hidden="true">      
+      <hbox   id="secondOpinionWarningBar" class="msgNotificationBar" align="center" hidden="true">
+        <vbox flex="1" >
+          
+          <!-- in case the attachment is dangerous we display a notification bar -->
+          <hbox flex="1">
+            <image id="secondOpinionWarningBarImage"/>
+            <vbox flex="1">
+              <description flex="1" class="msgNotificationBarText">&secondopinion.warning.header;</description>       
+              <label id="secondOpinionWarning" class="msgNotificaton-smallText text-link" 
+                     value="&secondopinion.warning.detail;" 
+                     onclick="secondOpinion.showDetails(event.clientX - event.target.boxObject.x, event.clientY - event.target.boxObject.y);"/>
+            </vbox>
+          </hbox>       
+          
+        </vbox>
+        <button label="&secondopinion.warning.hide;" oncommand="secondOpinion.hideWarnings()"/>   
+      </hbox>  
+
+      <hbox   id="secondOpinionErrorBar" class="msgNotificationBar" align="center" hidden="true">
+        <vbox flex="1" >                  
+          <!-- in case of an error we display a simple dialog -->
+          <hbox align="center" >
+            <label flex="1" id="secondOpinionError" class="msgNotificationBarText" />
+          </hbox>
+          
+        </vbox>
+        <button label="&secondopinion.warning.hide;" oncommand="secondOpinion.hideErrors()"/>   
+      </hbox>  
+	  
+      <panel id="secondOpinionDetailPanel"
+           type="arrow"
+           orient="vertical"
+           ignorekeys="true">
+        <hbox flex="1" align="top">
+          <label flex="1" value="&secondopinion.report.header;"/>
+        </hbox>
+        <vbox id="secondOpinionDetailUrlItems" />
+		<vbox id="secondOpinionDetailFileItems" />
+      </panel>	  
+    </vbox>
+  </vbox> 
+
+  <menupopup id="attachmentItemContext">
+    <menuseparator/>
+    <menuitem id="secondOpinionAttachmentItemContext" 
+	          label="&secondopinion.attachment.scan;" 
+			  oncommand="secondOpinion.onScanAttachments(this.parentNode.attachments)" />
+    <menuitem id="secondOpinionAttachmentItemOpenContext" 
+	          label="&secondopinion.attachment.open;" 
+			  oncommand="secondOpinion.onViewAttachments(this.parentNode.attachments)" />			  
+  </menupopup>
+
+  <!--<menupopup id="attachmentListContext">
+    <menuitem id="secondOpinionAttachmentListContext" 
+	          label="&secondopinion.attachments.scan;" 
+			  oncommand="secondOpinion.onScanAttachments(currentAttachments)" />
+  </menupopup>-->
+
+</overlay>
