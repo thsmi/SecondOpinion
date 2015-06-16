@@ -41,6 +41,3 @@ Give me 1-2 weeks time for a reply. If you did not receive a reply at all, it mi
 
 The extension is free and open source software, it is made available to you 
 under the terms of the [GNU Affero General Public License (AGPLv3)](http://www.fsf.org/licensing/licenses/agpl-3.0.html).
-
-Refer to [Licensing information](https://github.com/thsmi/sieve/blob/master/LICENSE.md) for details.
-
