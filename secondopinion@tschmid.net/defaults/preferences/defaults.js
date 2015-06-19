@@ -4,7 +4,7 @@ pref("extensions.secondopinion.apikey.public", "9e9b3ab1ca6906f6b316a59fd5ab173f
 pref("extensions.secondopinion.apikey.private", "");
 pref("extensions.secondopinion.cache", true);
 pref("extensions.secondopinion.obfuscate", true);
-pref("extensions.secondopinion.excluded", "Blueliv;Quttera");
+pref("extensions.secondopinion.excluded", "Blueliv;Quttera;AutoShun");
 pref("extensions.secondopinion.loglevel", 0);
 pref("extensions.secondopinion.termsofservice", false);
 
