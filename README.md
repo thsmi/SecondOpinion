@@ -6,6 +6,8 @@ Imagine the following scenario. You got a strange mail but your anti virus tells
 That's where this tools starts. It offers a convenient way to upload attachments to VirusTotal. 
 VirusTotal will run your attachment through more than 50 anti-virus engines. The result is a strong indicator if the file is safe or not.
 
+![Screenshot](https://cloud.githubusercontent.com/assets/2531380/10354103/0d824c72-6d5d-11e5-9969-a90faeff44bf.png)
+
 Please keep in mind, that his add-on is NOT an anti-virus replacement and never will be for various reasons.
 Checking a file with so many anti-virus needs time, it takes Virus Total several minutes to complete even for small files.  It's not a real-time scanner, it an on demand service. And due to the enormous amount of scan engines the chances for false positives add up. So consider the the scan result as a profound indicator and a second opinion or second wall of defence in addition to your anti-virus.
 
