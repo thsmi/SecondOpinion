@@ -27,6 +27,11 @@ When checking attachments the files fingerprint/checksum is uploaded and the fil
 
 But when you manually trigger a scan or rescan, the file will be uploaded to VirusTotaly. In case it is rated as a positive it will be forwarded all anti-virus manufactures for further analysis. So never upload any files which are confidential.
 
+# Releases
+
+You are looking for the most recent release? Just go to addons.mozilla.org.
+ * https://addons.mozilla.org/en-US/thunderbird/addon/secondopinion/
+
 # API Reuse
 
 This addon implements VirusTotal's public API 2.0 in JavaScript. As this is free and open software you may integrate this implementation into your software. You find instructions at [VirusTotal public API 2.0 in JavaScript](VIRUS TOTAL API.md)
