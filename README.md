@@ -18,7 +18,7 @@ By design it can only check if a file is a dangerous and not if it's safe. So no
 There is a 4 request per minute quota with VirusTotal. Which means at the beginning you'll see an indicator displaying you are out of quota. This will get decrease dramatically the better the local cache is trained. The only option you have is to ignore that message.
 
 
-# Privacy
+## Privacy
 
 Please read [VirusTotal's terms of service](https://www.virustotal.com/en/about/terms-of-service/) before using the add-on.
 
@@ -27,16 +27,16 @@ When checking attachments the files fingerprint/checksum is uploaded and the fil
 
 But when you manually trigger a scan or rescan, the file will be uploaded to VirusTotaly. In case it is rated as a positive it will be forwarded all anti-virus manufactures for further analysis. So never upload any files which are confidential.
 
-# Releases
+## Releases
 
 You are looking for the most recent release? Just go to addons.mozilla.org.
  * https://addons.mozilla.org/en-US/thunderbird/addon/secondopinion/
 
-# API Reuse
+## API Reuse
 
 This addon implements VirusTotal's public API 2.0 in JavaScript. As this is free and open software you may integrate this implementation into your software. You find instructions at [VirusTotal public API 2.0 in JavaScript](VIRUS TOTAL API.md)
 
-# Bugs
+## Bugs
 
 Please report bugs via the [issue tracker](https://github.com/thsmi/SecondOpinion/issues) 
 or send an email to schmid-thomas at gmx.net . You find more details on reporting bugs in 
@@ -44,7 +44,7 @@ the [Contributing Guidelines](https://github.com/thsmi/SecondOpinion/blob/master
 
 Give me 1-2 weeks time for a reply. If you did not receive a reply at all, it might be a good idea to check your spam filter. 
 
-# License
+## License
 
 The extension is free and open source software, it is made available to you 
 under the terms of the [GNU Affero General Public License (AGPLv3)](http://www.fsf.org/licensing/licenses/agpl-3.0.html).
