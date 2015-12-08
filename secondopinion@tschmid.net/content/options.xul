@@ -4,22 +4,44 @@
 
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
-  <setting pref="extensions.secondopinion.apikey.type" 
-           type="radio" title="&secondopinion.apikey.type;"
-		   desc="&secondopinion.apikey.type.desc;">
-    <radiogroup>
-      <radio value="0" label="&secondopinion.apikey.type.public;"/>
-      <radio value="1" label="&secondopinion.apikey.type.private;"/>
-    </radiogroup>
-  </setting>
+  <setting pref="extensions.secondopinion.virustotal.enabled" 
+           type="bool" title="&secondopinion.virustotal.enabled;" 
+           desc="&secondopinion.virustotal.enabled.desc;" />
   
-  <setting pref="extensions.secondopinion.apikey.private" 
-           type="string" title="&secondopinion.apikey.private;" 
-		   desc="&secondopinion.apikey.private.desc;"/>
-		   
+  <setting pref="extensions.secondopinion.virustotal.apikey.type" 
+           type="radio" title="&secondopinion.virustotal.apikey.type;"
+           desc="&secondopinion.virustotal.apikey.type.desc;">
+    <radiogroup>
+      <radio value="0" label="&secondopinion.virustotal.apikey.type.public;"/>
+      <radio value="1" label="&secondopinion.virustotal.apikey.type.private;"/>
+    </radiogroup>
+  </setting>   
+  
+  <setting pref="extensions.secondopinion.virustotal.apikey.private" 
+           type="string" title="&secondopinion.virustotal.apikey.private;" 
+           desc="&secondopinion.virustotal.apikey.private.desc;"/>		   
+       
+  <setting pref="extensions.secondopinion.metascan.enabled" 
+           type="bool" title="&secondopinion.metascan.enabled;" 
+           desc="&secondopinion.metascan.enabled.desc;" />  
+           
+  <setting pref="extensions.secondopinion.metascan.apikey" 
+           type="string" title="&secondopinion.metascan.apikey;" 
+           desc="&secondopinion.metascan.apikey.desc;"/>             
+       
   <setting pref="extensions.secondopinion.cache" 
            type="bool" title="&secondopinion.cache;" 
-		   desc="&secondopinion.cache.desc;" />
+		       desc="&secondopinion.cache.desc;" />
+       
+  <setting pref="extensions.secondopinion.blacklist.age" 
+           type="integer" title="&secondopinion.blacklist.age;"
+           desc="&secondopinion.blacklist.age.desc;" />       
+  
+  <setting pref="extensions.secondopinion.whitelist.age" 
+           type="integer" title="&secondopinion.whitelist.age;"
+           desc="&secondopinion.whitelist.age.desc;" />     
+       
+       
   <setting pref="extensions.secondopinion.obfuscate" 
            type="bool" title="&secondopinion.obfuscate;"
 		   desc="&secondopinion.obfuscate.desc;" />

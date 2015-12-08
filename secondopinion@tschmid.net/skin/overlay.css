@@ -1,5 +1,17 @@
 #secondOpinionWarningBarImage {
-    background: url("chrome://secondopinion/skin/devil-angel.png") no-repeat scroll 0px 0px transparent;
-	width: 40px;
+    background: url("chrome://secondopinion/skin/dangerours-32.png") no-repeat scroll center transparent;
+	width: 42px;
+	height :42px;
+}
+
+#secondOpinionUnknownImage {
+    background: url("chrome://secondopinion/skin/unknown-32.png") no-repeat scroll center transparent;
+	width: 42px;
+	height :42px;
+}
+
+#secondOpinionErrorImage {
+    background: url("chrome://secondopinion/skin/error-32.png") no-repeat scroll center transparent;
+	width: 42px;
 	height :42px;
 }

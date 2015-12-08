@@ -7,22 +7,39 @@
 
 <!ENTITY secondopinion.attachment.open "View on VirusTotal.com" >
 
-<!ENTITY secondopinion.report.header    "VirusTotal.com Scan Reports" >
+<!ENTITY secondopinion.report.header    "Scan Reports" >
 
 <!ENTITY secondopinion.link.open "View on VirusTotal.com" >
 
-<!ENTITY secondopinion.apikey.type "Api key" >
-<!ENTITY secondopinion.apikey.type.desc 
+<!ENTITY secondopinion.virustotal.apikey.type "VirusTotal Api key" >
+<!ENTITY secondopinion.virustotal.apikey.type.desc 
 "A 'api key' is used to access the services at VirusTotal.com. The key defines how many request per minute are possible." >
-<!ENTITY secondopinion.apikey.type.private "use my private api key" >
-<!ENTITY secondopinion.apikey.type.public "use public api key">
+<!ENTITY secondopinion.virustotal.apikey.type.private "use my private api key" >
+<!ENTITY secondopinion.virustotal.apikey.type.public "use public api key">
 
-<!ENTITY secondopinion.apikey.private "Private api key" >
-<!ENTITY secondopinion.apikey.private.desc 
-"You can can request a private api key for free at VirusTotal.com. Such a key offers a higher request rate and priority." >
+<!ENTITY secondopinion.virustotal.apikey.private "VirusTotal Private api key" >
+<!ENTITY secondopinion.virustotal.apikey.private.desc 
+"You can request a private api key for free at VirusTotal.com. Such a key offers a higher request rate and priority." >
+
+<!ENTITY secondopinion.virustotal.enabled "Use VirusTotal" >
+<!ENTITY secondopinion.virustotal.enabled.desc "VirusTotal.com offers free and permium scan services. The free services can be used without registration and without a private api key." >
+
+<!ENTITY secondopinion.metascan.enabled "Use metascan" >
+<!ENTITY secondopinion.metascan.enabled.desc "Metascan offers free and premium scan services, all require a registration and a private api key." >
+
+<!ENTITY secondopinion.metascan.apikey "Metascan api key" >
+<!ENTITY secondopinion.metascan.apikey.desc 
+"You need to register for free at metascan-online.com to get your api key. Premium key offers a higher request rate and priority." >
+
 
 <!ENTITY secondopinion.cache "Cache response">
 <!ENTITY secondopinion.cache.desc "Often viruses are received multiple times. In order to avoid unnecessary request, positive results are cached in a local database. ">
+
+<!ENTITY secondopinion.blacklist.age "Maximum Blacklist Age (in Days)">
+<!ENTITY secondopinion.blacklist.age.desc "Malicous files and urls are stored in the blacklist cache. Entries are dropped or reevaluated when they exceed the maximum age.">
+
+<!ENTITY secondopinion.whitelist.age "Maximum Whitelist Age (in Hours)">
+<!ENTITY secondopinion.whitelist.age.desc "The white list cache contains urls and files considered as safe.">
 
 <!ENTITY secondopinion.obfuscate "Obfuscate filenames" >
 <!ENTITY secondopinion.obfuscate.desc "Some phishing and viruses use personalized filenames. So you may want to obfuscate the filename before uploading it to VirusTotal.com" >

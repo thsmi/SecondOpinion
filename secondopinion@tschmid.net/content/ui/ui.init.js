@@ -1,3 +1,17 @@
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+ 
+/* global window */
+
 "use strict";
 
 var net = net || {};
@@ -12,17 +26,20 @@ if (!net.tschmid.secondopinion.ui)
   net.tschmid.secondopinion.ui = {};
 
 (function() {
+  
+  /* global gMessageListeners */
+  
   function SecondOpinionInitUi() {}
 
   SecondOpinionInitUi.prototype = {     
 
     load : function() {
-      let self = this;
+      var self = this;
       
-      let listener = {
+      var listener = {
         onStartHeaders : function() { self.onStartHeaders(); },
         onEndHeaders : function() { },
-        onEndAttachments : function() { },
+        onEndAttachments : function() { }
       };
     
       gMessageListeners.push(listener);
@@ -31,10 +48,10 @@ if (!net.tschmid.secondopinion.ui)
       this.getUrlApi().load(); 
       this.getContextUi().load();      
       
-      let settings = net.tschmid.secondopinion.settings;
-      let links = net.tschmid.secondopinion.ui.links;
+      var settings = net.tschmid.secondopinion.settings;
+      var links = net.tschmid.secondopinion.ui.links;
       if (settings.isAwareOfTermsOfService())
-        return
+        return;
         
       links.openUrlInTab("https://www.virustotal.com/en/about/terms-of-service/");
       settings.setAwareOfTermsOfService(); 
@@ -93,12 +110,12 @@ if (!net.tschmid.secondopinion.ui)
     },
     
     getLogger : function() {
-      if (!net.tschmid.secondopinion.logger)
+      if (!net.tschmid.secondopinion.Logger)
         throw "Failed to import logger";  
     
-      return net.tschmid.secondopinion.logger;
+      return net.tschmid.secondopinion.Logger;
     }   
-  }
+  };
   
   net.tschmid.secondopinion.ui.init = new SecondOpinionInitUi(); 
   

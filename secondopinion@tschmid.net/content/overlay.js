@@ -29,7 +29,7 @@
 var secondOpinion = {
     
   onLoad: function() {    
-    secondOpinion.getInitApi().load( )  
+    secondOpinion.getInitApi().load();
   },
   
   onUnload : function() {
@@ -54,7 +54,7 @@ var secondOpinion = {
     if (!Array.isArray(items))
       return;
       
-    if (items.length == 0)
+    if (items.length === 0)
       return;
          
 /*    let urls = [];
@@ -110,12 +110,6 @@ var secondOpinion = {
     return net.tschmid.secondopinion.ui.url;
   },  
 
-  getRequestApi : function() {
-    if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.requests )
-      throw "Failed to import requests";
-  
-    return net.tschmid.secondopinion.requests;        
-  },
   
   getInitApi : function() {
     if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.ui || !net.tschmid.secondopinion.ui.init )

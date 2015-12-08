@@ -1,3 +1,17 @@
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+ 
+/* global window */
+
 "use strict";
 
 var net = net || {};
@@ -12,6 +26,11 @@ if (!net.tschmid.secondopinion.ui)
   net.tschmid.secondopinion.ui = {};
 
 (function() {
+  
+  /* global gMessageListeners */
+  /* global MailServices */ 
+  /* global currentHeaderData */
+  
   function SecondOpinionEmailUi() {}
 
   SecondOpinionEmailUi.prototype = {
@@ -19,17 +38,20 @@ if (!net.tschmid.secondopinion.ui)
     loadMessageCallback : null,
 
     load : function(callback) {
-      let self = this;
+      var self = this;
 
       this.loadMessageCallback = callback;
       
-      let listener = {
+      var listener = {
+        
         onStartHeaders : function() { },
+        
         onEndHeaders : function() {
           // Release some pressure from the main thread...
-          window.setTimeout(function () { self.onEndHeaders() }, 0);
+          window.setTimeout(function () { self.onEndHeaders(); }, 0);
         },
-        onEndAttachments : function() { },
+        
+        onEndAttachments : function() { }
       };
     
       gMessageListeners.push(listener);
@@ -58,7 +80,7 @@ if (!net.tschmid.secondopinion.ui)
         if (!item.email)
           return;
         
-        let parts = (new String(item.email)).split("@");
+        var parts = ("" + item.email).split("@");
         
         if (parts.length != 2)
           return;
@@ -70,21 +92,21 @@ if (!net.tschmid.secondopinion.ui)
       });
       
       var items = [];
-      urls.forEach(function (item) { items.push(item) } );
+      urls.forEach(function (item) { items.push(item); } );
       
-      let self = this;    
-      let callback = function(reports) { 
-        window.setTimeout(function () { self.onDomainReportsLoaded(urls, reports) }, 0);
+      var self = this;    
+      var callback = function(reports) { 
+        window.setTimeout(function () { self.onDomainReportsLoaded(urls, reports); }, 0);
       };            
       
       this.getReportApi().loadReports(items, callback);  
     },
     
     onDomainReportsLoaded : function (domains, reports) {
+      
+      var self = this;
     
       if (reports) {
-        
-        let self = this;
         
         reports.forEach( function(item) {
             
@@ -105,17 +127,16 @@ if (!net.tschmid.secondopinion.ui)
           if (item["positives"] === 0)
             return;
         
-          self.getMessageApi().showUrlMessage(item["resource"], item["permalink"], item["positives"], item["total"]);    
+          self.getMessageApi().showUrlMessage(report);    
         });
       }
       
-      if (domains.size == 0)
+      if (domains.size === 0)
         return; 
     
       this.getLogger().logDebug("Requesting Domain Report for " + domains);
       
-      let self = this;
-      let callback = function(domain, response) {
+      var callback = function(domain, response) {
         self.getLogger().logDebug(response.status);
         self.getLogger().logDebug(response.responseText);
       };    
@@ -154,12 +175,12 @@ if (!net.tschmid.secondopinion.ui)
     },    
           
     getLogger : function() {
-      if (!net.tschmid.secondopinion.logger)
+      if (!net.tschmid.secondopinion.Logger)
         throw "Failed to import logger";  
     
-      return net.tschmid.secondopinion.logger;
+      return net.tschmid.secondopinion.Logger;
     }   
-  }
+  };
   
   net.tschmid.secondopinion.ui.file = new SecondOpinionEmailUi(); 
   

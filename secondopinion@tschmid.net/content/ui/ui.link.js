@@ -1,9 +1,18 @@
-"use strict";
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+ 
+/* global window */
 
-if (!Ci)
-  var Ci = Components.interfaces;
-if (!Cc)
-  var Cc = Components.classes;
+"use strict";
 
 var net = net || {};
 
@@ -17,6 +26,13 @@ if (!net.tschmid.secondopinion.ui)
   net.tschmid.secondopinion.ui = {};
 
 (function() {
+  
+  /* global Components */
+  /* global document */
+  
+  var Ci = Components.interfaces;
+  var Cc = Components.classes;  
+  
   function SecondOpinionLinkUi() {}  
   
   SecondOpinionLinkUi.prototype = {
@@ -35,10 +51,10 @@ if (!net.tschmid.secondopinion.ui)
     
     openUrlInTab : function(url) {
       
-      let tabmail = document.getElementById("tabmail");
+      var tabmail = document.getElementById("tabmail");
       if (!tabmail) {
         // Try opening new tabs in an existing 3pane window
-        let mail3PaneWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
+        var mail3PaneWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
                                   .getService(Ci.nsIWindowMediator)
                                   .getMostRecentWindow("mail:3pane");
                                   
@@ -55,7 +71,7 @@ if (!net.tschmid.secondopinion.ui)
                     { tabType: "contentTab", tabParams: {contentPage: url} });
       
     }
-	}
+	};
   
   net.tschmid.secondopinion.ui.links = new SecondOpinionLinkUi(); 
   

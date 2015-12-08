@@ -9,6 +9,7 @@
     <em:homepageURL></em:homepageURL>
 	<em:optionsURL>chrome://secondopinion/content/options.xul</em:optionsURL>
     <em:optionsType>2</em:optionsType>
+	<em:icon64URL>chrome://secondopinion/skin/logo-64.png</em:icon64URL>
 	
 	<em:unpack>true</em:unpack>
 

@@ -1,3 +1,17 @@
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+ 
+/* global window */
+
 "use strict";
 
 var net = net || {};
@@ -9,7 +23,10 @@ if (!net.tschmid.secondopinion)
   net.tschmid.secondopinion = {};
 
 
-(function() {
+(function (exports) {
+  
+  /* global XMLHttpRequest */
+  
   function SecondOpinionDomain() {}
 
   SecondOpinionDomain.prototype = {	
@@ -26,16 +43,16 @@ if (!net.tschmid.secondopinion)
     **/	     
     getDomainReport : function(domain, callback) {
     	  
-      let url = "https://www.virustotal.com/vtapi/v2/domain/report"
-      url += "?domain=" + encodeURIComponent(domain)
-      url += "&apikey=" + encodeURIComponent(this.getSettings().getApiKey())        
+      var url = "https://www.virustotal.com/vtapi/v2/domain/report";
+      url += "?domain=" + encodeURIComponent(domain);
+      url += "&apikey=" + encodeURIComponent(this.getSettings().getVirusTotalApiKey());        
        
-      let request = new XMLHttpRequest();
+      var request = new XMLHttpRequest();
 	  
-	    let self = this;
+	    var self = this;
       request.onload = function(e) {
 	      self.getRequests().remove(domain);
-	      callback(domain, this)
+	      callback(domain, this);
       };
 	  
       request.open("GET",url);
@@ -56,9 +73,11 @@ if (!net.tschmid.secondopinion)
 	      throw "Failed to import requests";
 	
 	    return net.tschmid.secondopinion.requests;	
-	  },	
-  }
+    }
+  };
   
   // Export an instance to the global Scope  
-  net.tschmid.secondopinion.domain = new SecondOpinionDomain();  	  
-}());
+  net.tschmid.secondopinion.domain = new SecondOpinionDomain();
+
+  
+}(this));

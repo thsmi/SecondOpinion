@@ -1,53 +1,60 @@
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+
+/* global window */
+
 "use strict";
 
-if (!Ci)
+(function(exports) {
+  
+  /* global net */
+  /* global Components */
+  
   var Ci = Components.interfaces;
-if (!Cc)
   var Cc = Components.classes;
-
-
-var net = net || {};
-
-if (!net.tschmid)
-  net.tschmid = {};
-
-if (!net.tschmid.secondopinion)
-  net.tschmid.secondopinion = {};
-
-(function() {
+  
   function SecondOpinionLogger() {}
 
   SecondOpinionLogger.prototype = { 
   
     level  : null,
 
-	log : function(str, logLevel) {
+	  log : function(str, logLevel) {
       if (this.level === null)
         this.level = this.getSettings().getLogLevel();
 	 
-	  if (this.level < logLevel)
+	    if (this.level < logLevel)
         return;
 	 	  
       Cc["@mozilla.org/consoleservice;1"]
 	      .getService(Ci.nsIConsoleService)
 		  .logStringMessage("[SecondOpinion "+this.getTimestamp()+"]\n"+str);		
-	},
+	  },
 	
     logWarn : function(str) {
-	  this.log(str, 1);
-	},
+	    this.log(str, 1);
+	  },
     
     logInfo : function(str) {
-	  this.log(str, 2);
+	    this.log(str, 2);
     },
     
     logDebug : function(str) {
-	  this.log(str,3);
+	    this.log(str,3);
     },
 		
-	getTimestamp : function() {
+	  getTimestamp : function() {
 	  
-	  function _pad(n,m) {
+	    function _pad(n,m) {
         var str = n;
         
         for (var i = 0; i < m; i++)
@@ -55,11 +62,11 @@ if (!net.tschmid.secondopinion)
             str = '0'+str;
         
         return str; 		  
-	  }
+	    }
 		
       var date = new Date();	  
       
-	  return ""+_pad(date.getHours(),2)
+	    return ""+_pad(date.getHours(),2)
         + ":"+_pad(date.getMinutes(),2)
         + ":"+_pad(date.getSeconds(),2)
         + "."+_pad(date.getMilliseconds(),3);
@@ -71,9 +78,18 @@ if (!net.tschmid.secondopinion)
         throw "Failed to import settings";
     
       return net.tschmid.secondopinion.settings;
-    },  
-  }
+    }  
+  };
   
-  // Export an instance to the global Scope  
-  net.tschmid.secondopinion.logger = new SecondOpinionLogger();     
-}());  
+  if (!exports.net)
+    exports.net = {};
+
+  if (!exports.net.tschmid)
+    exports.net.tschmid = {};
+
+  if (!exports.net.tschmid.secondopinion)
+    exports.net.tschmid.secondopinion = {};
+  
+  exports.net.tschmid.secondopinion.Logger = new SecondOpinionLogger();
+  
+}(this));  

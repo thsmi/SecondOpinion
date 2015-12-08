@@ -1,28 +1,36 @@
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+
+/* global window */
+
 "use strict";
 
-if (!Cu)
+(function(exports) {
+  
+  /* global Components*/
+  /* global net */
+  /* global Task */
+  
   var Cu = Components.utils;
-if (!Ci)
   var Ci = Components.interfaces;
-if (!Cc)
   var Cc = Components.classes;
 
-Cu.import("resource://gre/modules/Services.jsm");  
-Cu.import("resource://gre/modules/NetUtil.jsm");  
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Sqlite.jsm");
-Cu.import("resource://gre/modules/Promise.jsm");
-Cu.import("resource://gre/modules/Task.jsm");
-
-var net = net || {};
-
-if (!net.tschmid)
-  net.tschmid = {};
-
-if (!net.tschmid.secondopinion)
-  net.tschmid.secondopinion = {};
-
-(function() {
+  Cu.import("resource://gre/modules/Services.jsm");  
+  Cu.import("resource://gre/modules/NetUtil.jsm");  
+  Cu.import("resource://gre/modules/XPCOMUtils.jsm");
+  Cu.import("resource://gre/modules/Sqlite.jsm");
+  Cu.import("resource://gre/modules/Promise.jsm");
+  Cu.import("resource://gre/modules/Task.jsm");
+    
     
   function SecondOpinionReports() {}
 
@@ -37,13 +45,16 @@ if (!net.tschmid.secondopinion)
     
         try {
           // Open a database
-          db = yield Sqlite.openConnection({ path: ".\\extensions\\secondopinion@tschmid.net\\storage\\cache.sqlite", sharedMemoryCache: false } );
+          db = yield Sqlite.openConnection({ path: ".\\extensions\\secondopinion@tschmid.net\\storage\\cache2.sqlite", sharedMemoryCache: true } );
        
           result = yield task(db);
       
         } catch (ex) {
           // Opening the database failed. We report this but continue as planed.
-          Cu.reportError("Exception "+ex.toSource());         
+          Cu.reportError("Exception "+ex.toSource());   
+          
+          if (ex.stack)
+            Cu.reportError(ex.stack.toString());
         } finally {
           // Don't forget to close the database or you will have bad surprises during shutdown
           if (db) 
@@ -54,6 +65,34 @@ if (!net.tschmid.secondopinion)
           callback(result);
       });
     }, 
+    
+   _loadReportByRow : function(item) {
+      
+      var engine = item.getResultByName("engine");
+      var type =  item.getResultByName("type");
+      
+      var report = {
+        resource : item.getResultByName("resource"),
+        positives : item.getResultByName("positives") ,
+        total : item.getResultByName("total"),
+        link : item.getResultByName("link"),
+        pending : item.getResultByName("pending")      
+      };
+    
+      if (!net.tschmid.secondopinion.engine)
+        throw new Error("No reports registered");
+      
+      if (!net.tschmid.secondopinion.engine[engine])
+        throw new Error("No reports registered for engine "+engine);
+      
+      if (!net.tschmid.secondopinion.engine[engine][type])
+        throw new Error("No reports registered for type "+engine+":"+type);
+        
+      if (!net.tschmid.secondopinion.engine[engine][type].Report)
+        throw new Error("No reports registered for type "+engine+":"+type);        
+      
+      return (new (net.tschmid.secondopinion.engine[engine][type].Report)()).loadByRow(report);      
+    },    
     
 	/**
 	 * Searches for the given reports in the database.
@@ -77,7 +116,7 @@ if (!net.tschmid.secondopinion)
 	  if (!Array.isArray(resources))
 	    resources = [resources];  
 	
-	  if (resources.length == 0) {		  
+	  if (resources.length === 0) {		  
       callback([]);
       return;		  
 	  }	 
@@ -107,21 +146,17 @@ if (!net.tschmid.secondopinion)
         // Skip in case no resource were found...
         if (rows.length < 1)
           return [];
-        
+                
+        // TODO we should wrap it into a report objects instead of a raw object.  
         let results = [];
         
-        rows.forEach( function(item) {
-          results.push( {
-            resource : item.getResultByName("resource"),
-            positives : item.getResultByName("positives") ,
-            total : item.getResultByName("total"),
-            permalink : item.getResultByName("permalink"),
-            pending : item.getResultByName("pending")           
-          })
-        })
+        rows.forEach( function(item) {          
+          var report = self._loadReportByRow(item);
+          results.push(report);
+        });
           
         return results;    
-      }
+      };
     
       return this._synchronizeStorage(task, callback);    
       
@@ -151,65 +186,59 @@ if (!net.tschmid.secondopinion)
 	 * @optional @param{boolean} force
 	 *   forces adding entries with zero positives.
      **/
-    storeReport : function(resource, pending, url, positives, total, force) {
+    storeReport : function(report, force) {
     
       // We can skip right here in case caching is disabled.
       if (!this.getSettings().isCacheEnabled())
         return;
 	
-	  var self = this;
+      var self = this;
     
       let task = function *storeReportTask(db) {
     
-      let hasTable = yield db.tableExists("reports");      
+        let hasTable = yield db.tableExists("reports");      
       
         // We create the cache in case the table does not exists...
         // ... otherwise we do some cleanup
         if (!hasTable) {          
-          yield db.execute("CREATE TABLE reports (resource TEXT, pending INTEGER, positives INTEGER, total INTEGER, permalink TEXT, created DATETIME)");              
-          yield db.execute("CREATE UNIQUE INDEX idx_report_resource ON reports(resource)");                
+          yield db.execute("CREATE TABLE reports (resource TEXT, pending INTEGER, positives INTEGER, total INTEGER, link TEXT, engine INTEGER , type INTEGER, created DATETIME, unique(resource, engine, type))");              
         }
         else {
-		  // All back listed entries with positives are kept for 14days while white listed entries are dropped after one day...
-          yield db.execute("DELETE FROM reports WHERE ( positives > 0 AND created < DateTime('now','-14 days')) OR (positives <= 0 AND created < DateTime('now','-1 days')) ");
-		}
-          
-        // On the one hand positives and total can't be zero and on the other hand they may be...
-        // ... omitted thus we need to ensure we set it to something valid.
-        if (positives == null || positives < 0)   
-          positives = -1;
-        
-        if (total == null || total < 0)
-          total = -1;     
-          
+          var whiteListAge = self.getSettings().getMaxWhiteListAge();
+          var blackListAge = self.getSettings().getMaxBackListAge();
+          // All back listed entries with positives are kept for 14days while white listed entries are dropped after one day...
+          yield db.execute("DELETE FROM reports WHERE ( positives > 0 AND created < DateTime('now','-"+blackListAge+" days')) OR (positives <= 0 AND created < DateTime('now','-"+whiteListAge+" hours')) ");
+		    }
+                   
+        // We do some cleanup to keep the number of pending reports down.
+        //
+        // In case the report is not pending but has an invalid positive count we trigger the cleanup.
+        // Unless force is set in explicit, we use a black list which means an report with zero positives is 
+        // an handled as an invalid report. 		
 		
-		// We do some cleanup to keep the number of pending reports down.
-		//
-		// In case the report is not pending but has an invalid positive count we trigger the cleanup.
-		// Unless force is set in explicit, we use a black list which means an report with zero positives is 
-		// an handled as an invalid report. 		
-		
-		if (!pending && ((positives < 0) || (positives == 0 && !force))) {
+        if (!report.isPending() && ((report.getPositives() < 0) || (report.getPositives() === 0 && !force))) {
 			
-		  self.getLogger().logDebug("Dropping pending/stalled report "+resource+" from Database");
+          self.getLogger().logDebug("Dropping pending/stalled report "+report.getResource()+" from Database");
 		  
-		  yield db.execute("DELETE FROM reports WHERE resource = :resource ", {resource: resource});
-		  return;
-		}		
+          yield db.execute("DELETE FROM reports WHERE resource = :resource ", {resource: report.getResource()});
+          return;
+		    }		
         
-		var params = {
-          resource: resource,
-          pending : ((!!pending)? 1 : 0),
-          positives: positives,
-          total: total,
-          permalink: url,
+		    var params = {
+          resource: report.getResource(),
+          pending : ((!!report.isPending())? 1 : 0),
+          positives: report.getPositives(),
+          total: report.getTotal(),
+          link: report.getLink(),
+          engine : report.getEngine(),
+          type : report.getType()
         };	
 		
-		self.getLogger().logDebug("Saving report "+resource+" to Database");
+        self.getLogger().logDebug("Saving report "+report.getResource()+" to Database");
 		
         // Otherwise we update or insert the report.
-        yield db.execute("REPLACE INTO reports VALUES (:resource , :pending, :positives, :total, :permalink, DateTime('now'))", params );    
-      }
+        yield db.execute("REPLACE INTO reports VALUES (:resource , :pending, :positives, :total, :link, :engine, :type, DateTime('now'))", params );    
+      };
     
       return this._synchronizeStorage(task);  
     },     
@@ -243,7 +272,7 @@ if (!net.tschmid.secondopinion)
           return false;
         
         return true;      
-      }  
+      };  
     
       return this._synchronizeStorage(task);
     },  
@@ -255,14 +284,24 @@ if (!net.tschmid.secondopinion)
       return net.tschmid.secondopinion.settings;
     },    
 	
-	getLogger : function() {
-	  if (!net.tschmid.secondopinion.logger)
-		throw "Failed to import logger";  
+	  getLogger : function() {
+	    if (!net.tschmid.secondopinion.Logger)
+		    throw "Failed to import logger";  
 	
-	  return net.tschmid.secondopinion.logger;
-	}
-  }
+	    return net.tschmid.secondopinion.Logger;
+	  }
+  };
+  
+  if (!exports.net)
+    exports.net = {};
+
+  if (!exports.net.tschmid)
+    exports.net.tschmid = {};
+
+  if (!exports.net.tschmid.secondopinion)
+    exports.net.tschmid.secondopinion = {};  
   
   // Export an instance to the global Scope  
-  net.tschmid.secondopinion.reports = new SecondOpinionReports();       
-}());  
+  exports.net.tschmid.secondopinion.Cache = new SecondOpinionReports();  
+ 
+}(this));
