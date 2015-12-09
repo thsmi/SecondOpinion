@@ -62,10 +62,10 @@ if (!net.tschmid.secondopinion)
     }, 	 
 
 	  getSettings : function () {
-	    if (!net.tschmid.secondopinion.settings)
+	    if (!net.tschmid.secondopinion.SETTINGS)
   	    throw "Failed to import settings";
 	
-	    return net.tschmid.secondopinion.settings;
+	    return net.tschmid.secondopinion.SETTINGS;
 	  },
 	
     getRequests : function() {

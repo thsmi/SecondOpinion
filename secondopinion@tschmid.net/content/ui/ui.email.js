@@ -175,10 +175,10 @@ if (!net.tschmid.secondopinion.ui)
     },    
           
     getLogger : function() {
-      if (!net.tschmid.secondopinion.Logger)
+      if (!net.tschmid.secondopinion.LOGGER)
         throw "Failed to import logger";  
     
-      return net.tschmid.secondopinion.Logger;
+      return net.tschmid.secondopinion.LOGGER;
     }   
   };
   

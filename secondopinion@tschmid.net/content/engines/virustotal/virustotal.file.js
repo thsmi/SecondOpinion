@@ -138,19 +138,12 @@ if (!net.tschmid.secondopinion)
       formData.append("file", blob);
       formData.append("apikey",this.getSettings().getVirusTotalApiKey());
     
-      var request = new XMLHttpRequest();
+      var request = (new net.tschmid.secondopinion.Request("POST"));
     
-      var self = this;
-      request.onload = function(event) { 
-        self.getRequests().remove(ENGINE_VIRUSTOTAL, name);
-        onCompleted(name, this); 
-      };
-    
-      request.upload.onprogress = function(event) { onProgress(name, event); };
-      request.open("POST", this.ADDRESS_FILE_UPLOAD);
-      request.send(formData);   
-    
-      this.getRequests().add(ENGINE_VIRUSTOTAL, name, request);
+      request
+        .setCompletedHandler( function (response) { onCompleted(name, response); })
+        .setUploadProgressHandler( function(event) { onProgress(name, event); } )
+        .send(this.ADDRESS_FILE_UPLOAD, formData);       
     },
 
     getFileReport : function(name, checksum, callback) {
@@ -163,35 +156,25 @@ if (!net.tschmid.secondopinion)
       formData.append("resource",checksum);
       formData.append("apikey",this.getSettings().getVirusTotalApiKey());
 
-      var request = new XMLHttpRequest();
-  
-      var self = this;
-      request.onload = function(e) {
-        self.getRequests().remove(ENGINE_VIRUSTOTAL, checksum);
-        
-        var response = (new VirusTotalFileResponse()).parse(this); 
-        callback(name, checksum, response);
+      var onCompleted = function(response) {
+        response = (new VirusTotalFileResponse()).parse(response); 
+        callback( name, checksum, response );
       };
-  
-      request.open("POST", this.ADDRESS_FILE_REPORT);
-      request.send(formData);
-  
-      this.getRequests().add(ENGINE_VIRUSTOTAL, checksum, request);
+
+      var request = (new net.tschmid.secondopinion.Request("POST"));
+
+      request
+        .setCompletedHandler( onCompleted )
+        .send( this.ADDRESS_FILE_REPORT, formData );
+        
     }, 
 
     // Api short cuts ... 
     getSettings : function () {
-      if (!net.tschmid.secondopinion.settings)
+      if (!net.tschmid.secondopinion.SETTINGS)
         throw "Failed to import settings";
   
-      return net.tschmid.secondopinion.settings;
-    },
-  
-    getRequests : function() {
-      if (!net.tschmid.secondopinion.requests)
-        throw "Failed to import requests";
-  
-      return net.tschmid.secondopinion.requests;  
+      return net.tschmid.secondopinion.SETTINGS;
     }
   };
   
@@ -220,10 +203,10 @@ if (!net.tschmid.secondopinion)
   if (!exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_FILE])
     exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_FILE] = {};
     
-  exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_FILE].api 
+  exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_FILE].API 
       = exports.net.tschmid.secondopinion.virustotal.file;  
     
   exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_FILE].Report
       = VirusTotalFileReport;  
   
-}(this));  
+}(this));

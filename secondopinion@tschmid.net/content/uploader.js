@@ -12,6 +12,7 @@
  
 /* global window */
 /* global document */
+/* global net */
 
 "use strict";
   
@@ -78,14 +79,14 @@
     item.textContent = "" +name;			
     item.addEventListener("click", function() { net.tschmid.secondopinion.ui.links.openUrl(url); }, false);		
 	
-    net.tschmid.secondopinion.Cache.storeReport(resp["sha256"], true, url);
+    net.tschmid.secondopinion.CACHE.storeReport(resp["sha256"], true, url);
 	
     document.getElementById("UploadWizard").canAdvance = true;
   } 
   
 
   function doCancel(){
-    net.tschmid.secondopinion.requests.reset();
+    net.tschmid.secondopinion.SESSION.reset();
     return true;
   }
 

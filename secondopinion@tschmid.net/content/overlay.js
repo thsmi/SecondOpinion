@@ -1,8 +1,20 @@
+/*
+ * The contents of this file are licenced. You may obtain a copy of 
+ * the license at https://github.com/thsmi/SecondOpinion/ or request it via 
+ * email from the author.
+ *
+ * Do not remove or change this comment.
+ * 
+ * The initial author of the code is:
+ *   Thomas Schmid <schmid-thomas@gmx.net>
+ *      
+ */
+
 "use strict";
 
+/* global net */
+
 // TODOs:
-//  * Add License header..
-//
 //  * Dim Message/Attchment on Danger?
 // 
 //  * Handle multiple file upload.  
@@ -66,7 +78,7 @@ var secondOpinion = {
       urls.push(item);
     }*/
     
-    let item = [];
+    var item = [];
     
     item[0] = {
       name : ""+items[0].name,
@@ -115,8 +127,8 @@ var secondOpinion = {
     if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.ui || !net.tschmid.secondopinion.ui.init )
       throw "Failed to import requests";
     
-    return net.tschmid.secondopinion.ui.init
+    return net.tschmid.secondopinion.ui.init;
   }
-}
+};
 
 window.addEventListener( 'load', function() { secondOpinion.onLoad(); }, false );

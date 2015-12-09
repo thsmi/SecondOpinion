@@ -19,6 +19,7 @@
   /* global Components*/
   /* global net */
   /* global Task */
+	/* global Sqlite */
   
   var Cu = Components.utils;
   var Ci = Components.interfaces;
@@ -278,17 +279,17 @@
     },  
       
     getSettings : function() {
-      if (!net.tschmid.secondopinion.settings)
+      if (!net.tschmid.secondopinion.SETTINGS)
         throw "Failed to import settings";
     
-      return net.tschmid.secondopinion.settings;
+      return net.tschmid.secondopinion.SETTINGS;
     },    
 	
 	  getLogger : function() {
-	    if (!net.tschmid.secondopinion.Logger)
+	    if (!net.tschmid.secondopinion.LOGGER)
 		    throw "Failed to import logger";  
 	
-	    return net.tschmid.secondopinion.Logger;
+	    return net.tschmid.secondopinion.LOGGER;
 	  }
   };
   
@@ -302,6 +303,6 @@
     exports.net.tschmid.secondopinion = {};  
   
   // Export an instance to the global Scope  
-  exports.net.tschmid.secondopinion.Cache = new SecondOpinionReports();  
+  exports.net.tschmid.secondopinion.CACHE = new SecondOpinionReports();  
  
 }(this));

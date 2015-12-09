@@ -309,10 +309,10 @@ if (!net.tschmid.secondopinion.ui)
         if (!engine[1])
           return;
           
-        if (!engine[1].api)
+        if (!engine[1].API)
           return;
           
-        engines.push(engine[1].api);
+        engines.push(engine[1].API);
       });
       
       if (!engines.length)
@@ -322,10 +322,10 @@ if (!net.tschmid.secondopinion.ui)
     },
     
     getCache : function() {
-      if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.Cache)
+      if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.CACHE)
         throw "ui.url.js failed to import cache";   
     
-      return net.tschmid.secondopinion.Cache;
+      return net.tschmid.secondopinion.CACHE;
     },
     
     getMessageApi : function() {
@@ -336,16 +336,16 @@ if (!net.tschmid.secondopinion.ui)
     },
        
     getLogger : function() {
-      if (!net.tschmid.secondopinion.Logger)
+      if (!net.tschmid.secondopinion.LOGGER)
         throw "Failed to import logger";  
     
-      return net.tschmid.secondopinion.Logger;
+      return net.tschmid.secondopinion.LOGGER;
     },
 
 	  getSettings : function () {
-	    if (!net.tschmid.secondopinion.settings)
+	    if (!net.tschmid.secondopinion.SETTINGS)
   	    throw "Failed to import settings";
-	    return net.tschmid.secondopinion.settings;
+	    return net.tschmid.secondopinion.SETTINGS;
 	  }  
   };
   

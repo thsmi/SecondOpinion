@@ -28,15 +28,15 @@
   var ENGINE_METASCAN = 2;
   var ENGINE_TYPE_URL = 1;
   
-  if (!net.tschmid.secondopinion.Logger)
-    throw "Failed to import logger";
+  if (!net.tschmid.secondopinion.LOGGER)
+    throw "Failed to import LOGGER";
   
-  var logger = net.tschmid.secondopinion.Logger;  
+  var LOGGER = net.tschmid.secondopinion.LOGGER;  
   
-  if (!net.tschmid.secondopinion.settings)
-    throw "Failed to import settings";
+  if (!net.tschmid.secondopinion.SETTINGS)
+    throw "Failed to import SETTINGS";
   
-  var settings = net.tschmid.secondopinion.settings;    
+  var SETTINGS = net.tschmid.secondopinion.SETTINGS;    
   
 //--------------------------------------------------------------------------------- 
   
@@ -58,7 +58,7 @@
     
   MetascanUrlReport.prototype.loadByResponse = function(report) {
 
-    logger.logDebug(report);
+    LOGGER.logDebug(report);
     
     this._hasError = false;
     this._hasReport = true;
@@ -71,12 +71,12 @@
     var total = 0;
     var positives = 0;
     
-    var excluded = settings.getExcluded(); 
+    var excluded = SETTINGS.getExcluded(); 
     
     report["scan_results"].forEach( function(item) {
       
       if(excluded.indexOf(item["source"]) !== -1) {
-        logger.logDebug("Excluding results from "+item["source"]);
+        LOGGER.logDebug("Excluding results from "+item["source"]);
         return;       
       }
 
@@ -91,58 +91,7 @@
     this._positives = positives;
     this._total = total;
     
-    return this;
-
-    
-    /*var keys = Object.keys(report);
-  
-    if ((Object.keys(report).length === 1) && (report[Object.keys(report)[0]] === "Not Found")) {
-      this._hasError = false;
-      return this;      
-    }
-    
-    if (!report["data_id"] || !report["file_info"] || !report["scan_results"])
-      return this;
-      
-    this._hasError = false;
-    this._hasReport = true; 
-    
-    // Pending 
-    if (report["scan_results"]["progress_percentage"] !== 100)
-      this._isPending = true;
-      
-    // Link...
-    this._link = "https://www.metascan-online.com/#!/results/file/"+report["data_id"]+"/regular";    
-    
-    // The resource upl...
-    this._resource = report["file_info"]["sha256"].toLowerCase();    
-
-    
-    // We need to calculate the positives by our own...
-    var total = 0;
-    var positives = 0;
-    
-    var excluded = settings.getExcluded(); 
-    
-    for (var key in report["scan_results"]["scan_details"]) {
-      
-      if (excluded.indexOf(key) !== -1) {
-        logger.logDebug("Excluding results from "+key);
-        continue;
-      }
-      
-      total++;
-            
-      var item = report["scan_results"]["scan_details"][key];
-      
-      if (item["scan_result_i"] !== 0)
-        positives++;    
-    }
-    
-    this._positives = positives;
-    this._total = total;*/       
-    
-    //return this;      
+    return this; 
   };
     
   MetascanUrlReport.prototype.isValid = function() {
@@ -181,12 +130,12 @@
   MetascanUrlResponse.prototype.createReports = function(data) {
     
     if (typeof(data["err"]) !== "undefined") {
-      logger.logDebug(data["err"]);
+      LOGGER.logDebug(data["err"]);
       return [];
     }
     
     if (!Array.isArray(data)) {
-      logger.logDebug("Array expected");
+      LOGGER.logDebug("Array expected");
       return [];
     }
       
@@ -224,7 +173,7 @@
     getUrlReport : function(urls, callback) {
           
       // Check if MetaScan is enabled...
-      if (!this.getSettings().isMetascanEnabled())
+      if (!SETTINGS.isMetascanEnabled())
         return;
       
       var address = {};      
@@ -233,41 +182,18 @@
         urls = [urls];          
         
       address["address"] = urls;
-        
-      var request = new XMLHttpRequest();
-    
-      var self = this;
-      request.onload = function(e) {
-        self.getRequests().remove(ENGINE_METASCAN, urls);
-        
-        logger.logDebug(this.responseText);
-        var response = (new MetascanUrlResponse()).parse(this);
-
-        callback(urls, response);
+            
+      var onCompleted = function( response ) {
+        response = (new MetascanUrlResponse()).parse(response);
+        callback( urls, response );
       };
       
-      // Convert to string
-      address = JSON.stringify(address);
-      
-      request.open("POST",this.ADDRESS_URL_REPORT);
-      request.setRequestHeader("apikey",this.getSettings().getMetascanApiKey());      
-      request.send(address);
-    
-      this.getRequests().add(ENGINE_METASCAN, urls, request);
-    },   
-
-    getSettings : function () {
-      if (!net.tschmid.secondopinion.settings)
-        throw "Failed to import settings";
-  
-      return net.tschmid.secondopinion.settings;
-    },
-  
-    getRequests : function() {
-      if (!net.tschmid.secondopinion.requests)
-        throw "Failed to import requests";
-  
-      return net.tschmid.secondopinion.requests;  
+      var request = new (net.tschmid.secondopinion.Request)("POST");
+       
+      request
+        .setCompletedHandler( onCompleted )
+        .setHeader( "apikey", SETTINGS.getMetascanApiKey() )     
+        .send( this.ADDRESS_URL_REPORT, JSON.stringify(address) );
     }
   };
   
@@ -283,7 +209,7 @@
   if (!exports.net.tschmid.secondopinion.metsacan)
     exports.net.tschmid.secondopinion.metascan = {};
     
-  exports.net.tschmid.secondopinion.metascan.url = new MetascanUrlRequest();    
+  exports.net.tschmid.secondopinion.metascan.URL = new MetascanUrlRequest();    
   
   
   
@@ -296,8 +222,8 @@
   if (!exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_URL])
     exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_URL] = {};   
     
-  exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_URL].api 
-      = exports.net.tschmid.secondopinion.metascan.url;
+  exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_URL].API 
+      = exports.net.tschmid.secondopinion.metascan.URL;
       
   exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_URL].Report 
       = MetascanUrlReport;        

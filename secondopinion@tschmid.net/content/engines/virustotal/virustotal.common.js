@@ -18,15 +18,15 @@
   
   /* global net */
   
-  if (!net.tschmid.secondopinion.settings)
-    throw "Failed to import settings";
+  if (!net.tschmid.secondopinion.SETTINGS)
+    throw "Failed to import SETTINGS";
   
-  var settings = net.tschmid.secondopinion.settings;
+  var SETTINGS = net.tschmid.secondopinion.SETTINGS;
   
-  if (!net.tschmid.secondopinion.Logger)
+  if (!net.tschmid.secondopinion.LOGGER)
     throw "Failed to import logger";
   
-  var logger = net.tschmid.secondopinion.Logger;
+  var LOGGER = net.tschmid.secondopinion.LOGGER;
    
   /* global XMLHttpRequest */
   /* global FormData */
@@ -66,7 +66,7 @@
     
     // Some engines have a really bad quality and return many false positives.
     // We need to exclude those.      
-    var excluded = settings.getExcluded();      
+    var excluded = SETTINGS.getExcluded();      
       
     excluded.forEach(function(item) {
       
@@ -78,7 +78,7 @@
       if ( !report["scans"] || !report["scans"][item] ) 
         return;
       
-      logger.logDebug("Excluding results from "+item);
+      LOGGER.logDebug("Excluding results from "+item);
       
       if (report["scans"][item]["detected"])
         report["positives"] -= 1;
@@ -162,24 +162,21 @@
       }
       
       if (this.getError()) {
-        this.getRequestApi().reset();  
         return this;
       }
-      
-      logger.logDebug(response.responseText);
             
       var reports = JSON.parse(response.responseText);
       
       // Normalize into an array...
       if (!Array.isArray(reports)) {
-        logger.logDebug("Normalizing response into an array");
+        LOGGER.logDebug("Normalizing response into an array");
         reports = [reports];
       }
       
       var self = this;
       
       reports.forEach(function (item) {
-        logger.logDebug("Creating Report");
+        LOGGER.logDebug("Creating Report");
         self._reports.push( self.createReport(item) );
       } );     
       

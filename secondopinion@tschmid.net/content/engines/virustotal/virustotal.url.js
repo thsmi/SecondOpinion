@@ -37,10 +37,10 @@ if (!net.tschmid.secondopinion)
   var ENGINE_VIRUSTOTAL = 1;
   var ENGINE_TYPE_URL   = 1;
   
-  if (!net.tschmid.secondopinion.Logger)
-    throw "Failed to import logger";
+  if (!net.tschmid.secondopinion.LOGGER)
+    throw "Failed to import LOGGER";
   
-  var logger = net.tschmid.secondopinion.Logger;  
+  var LOGGER = net.tschmid.secondopinion.LOGGER;  
     
 
   //---------------------------------------------------------------------------------    
@@ -65,7 +65,7 @@ if (!net.tschmid.secondopinion)
   
   VirusTotalUrlReport.prototype.loadByResponse = function(report) {
       
-    logger.logDebug("URL Report"+report);   
+    LOGGER.logDebug("URL Report"+report);   
     
     VirusTotalAbstractReport.prototype.loadByResponse.call(this, report);
       
@@ -179,34 +179,24 @@ if (!net.tschmid.secondopinion)
       formData.append("scan", 1);
       formData.append("apikey", this.getSettings().getVirusTotalApiKey());
     
-      var request = new XMLHttpRequest();
     
-      var self = this;
-      request.onload = function(e) {
-        self.getRequests().remove(ENGINE_VIRUSTOTAL, urls);
-        
-        var response = (new VirusTotalUrlResponse()).parse(this);     
+      var onCompleted = function( response ) {        
+        response = (new VirusTotalUrlResponse()).parse(response);     
         callback( urls, response );
       };
     
-      request.open("POST",this.ADDRESS_URL_REPORT);
-      request.send(formData);
-    
-      this.getRequests().add(ENGINE_VIRUSTOTAL, urls, request);
+      var request = new net.tschmid.secondopinion.Request("POST");
+      request
+        .setCompletedHandler( onCompleted )
+        .send(this.ADDRESS_URL_REPORT, formData);  
+        
     },   
 
     getSettings : function () {
-      if (!net.tschmid.secondopinion.settings)
+      if (!net.tschmid.secondopinion.SETTINGS)
         throw "Failed to import settings";
   
-      return net.tschmid.secondopinion.settings;
-    },
-  
-    getRequests : function() {
-      if (!net.tschmid.secondopinion.requests)
-        throw "Failed to import requests";
-  
-      return net.tschmid.secondopinion.requests;  
+      return net.tschmid.secondopinion.SETTINGS;
     }
   };
    
@@ -222,7 +212,7 @@ if (!net.tschmid.secondopinion)
   if (!exports.net.tschmid.secondopinion.virustotal)
     exports.net.tschmid.secondopinion.virustotal = {};
     
-  exports.net.tschmid.secondopinion.virustotal.url = new VirusTotalUrlRequest(); 
+  exports.net.tschmid.secondopinion.virustotal.URL = new VirusTotalUrlRequest(); 
    
   
   
@@ -235,8 +225,8 @@ if (!net.tschmid.secondopinion)
   if (!exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_URL])
     exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_URL] = {};
     
-  exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_URL].api 
-      = exports.net.tschmid.secondopinion.virustotal.url;  
+  exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_URL].API 
+      = exports.net.tschmid.secondopinion.virustotal.URL;  
     
   exports.net.tschmid.secondopinion.engine[ENGINE_VIRUSTOTAL][ENGINE_TYPE_URL].Report
       = VirusTotalUrlReport;  

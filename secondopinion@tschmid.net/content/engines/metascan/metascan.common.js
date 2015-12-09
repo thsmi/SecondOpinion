@@ -16,18 +16,6 @@
 
 (function(exports) {
   
-  /* global net */
-  
-  if (!net.tschmid.secondopinion.settings)
-    throw "Failed to import settings";
-  
-  var settings = net.tschmid.secondopinion.settings;
-  
-  if (!net.tschmid.secondopinion.Logger)
-    throw "Failed to import logger";
-  
-  var logger = net.tschmid.secondopinion.Logger;
-   
   /* global XMLHttpRequest */
   /* global FormData */
    
@@ -101,11 +89,8 @@
         return this;
       }
       
-      if (this.getError()) {
-        // TODO Why this reset???
-        this.getRequestApi().reset();  
+      if (this.getError())
         return this;
-      }
             
       // We do not use metascan multiple data hashes api it is too limited.      
       this._reports = this.createReports(JSON.parse(response.responseText));
@@ -137,10 +122,7 @@
     
   if (!exports.net.tschmid.secondopinion.metascan)
     exports.net.tschmid.secondopinion.metascan = {};    
-    
-  // Export an instance to the global Scope  
-  //exports.net.tschmid.secondopinion.metascan.AbstractReport = MetascanAbstractReport;      
-    
+        
   // Export an instance to the global Scope  
   exports.net.tschmid.secondopinion.metascan.AbstractResponse = MetascanAbstractResponse;  
     

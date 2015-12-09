@@ -15,18 +15,6 @@
 "use strict";
 
 (function(exports) {
-  
-  /* global net */
-  
-  if (!net.tschmid.secondopinion.settings)
-    throw "Failed to import settings";
-  
-  var settings = net.tschmid.secondopinion.settings;
-  
-  if (!net.tschmid.secondopinion.Logger)
-    throw "Failed to import logger";
-  
-  var logger = net.tschmid.secondopinion.Logger;
    
   /* global XMLHttpRequest */
   /* global FormData */
@@ -48,15 +36,15 @@
   AbstractReport.prototype = {
     
     getEngine :function() {
-      throw "Implement getEngine";
+      throw new Error("Implement getEngine");
     },
     
     getType : function() {
-      throw "Implement getType";
+      throw new Error ("Implement getType");
     },
     
     getResource : function() {
-      throw "Implement getResource";
+      throw new Error("Implement getResource");
     },    
     
     isPending : function() {

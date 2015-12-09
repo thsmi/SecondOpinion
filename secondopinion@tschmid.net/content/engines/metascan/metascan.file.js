@@ -29,15 +29,15 @@
   var ENGINE_METASCAN = 2;
   var ENGINE_TYPE_FILE  = 2;    
   
-  if (!net.tschmid.secondopinion.Logger)
-    throw "Failed to import logger";
+  if (!net.tschmid.secondopinion.LOGGER)
+    throw "Failed to import LOGGER";
   
-  var logger = net.tschmid.secondopinion.Logger;  
+  var LOGGER = net.tschmid.secondopinion.LOGGER;  
   
-  if (!net.tschmid.secondopinion.settings)
+  if (!net.tschmid.secondopinion.SETTINGS)
     throw "Failed to import settings";
   
-  var settings = net.tschmid.secondopinion.settings;  
+  var SETTINGS = net.tschmid.secondopinion.SETTINGS;  
   
   var AbstractReport = net.tschmid.secondopinion.common.AbstractReport;
   var AbstractResponse = net.tschmid.secondopinion.metascan.AbstractResponse;  
@@ -65,9 +65,7 @@
   MetascanFileReport.prototype.loadByResponse = function(report) {
     
     var keys = Object.keys(report);
-    
-    logger.logDebug(report);
-        
+            
     if ((Object.keys(report).length === 1) && (report[Object.keys(report)[0]] === "Not Found")) {
       this._hasError = false;
       return this;      
@@ -95,12 +93,12 @@
     var total = 0;
     var positives = 0;
     
-    var excluded = settings.getExcluded(); 
+    var excluded = SETTINGS.getExcluded(); 
     
     for (var key in report["scan_results"]["scan_details"]) {
       
       if (excluded.indexOf(key) !== -1) {
-        logger.logDebug("Excluding results from "+key);
+        LOGGER.logDebug("Excluding results from "+key);
         continue;
       }
       
@@ -165,79 +163,50 @@
     // Scans the attachment urls passed.  
     uploadFile : function(name, chunks, onCompleted, onProgress) {
       
+    	if (!this.getSettins().isMetascanEnabled())
+    	  return;
+    	
       var filename = name;
 
-      if (this.getSettings().isNameObfuscated())
+      if (SETTINGS.isNameObfuscated())
         filename = Math.random().toString(36).slice(2);
       
       var blob = new Blob(chunks);    
     
-      var request = new XMLHttpRequest();    
-    
-      var self = this;
-      request.onload = function(event) {        
-        self.getRequests().remove(ENGINE_METASCAN, name);
-        
-        logger.logDebug(this.responseText);
-        
-        onCompleted(name, this); 
-      };
-    
-      request.upload.onprogress = function(event) { onProgress(name, event); };
+      var request = (new net.tschmid.secondopinion.Request("POST"));
       
-      request.open("POST",this.ADDRESS_FILE_UPLOAD);
-      request.setRequestHeader("filename", filename);
-      request.setRequestHeader("apikey",this.getSettings().getMetascanApiKey());
+      request
+        .setCompletedHandler( function (request) { onCompleted(name, request); } )
+        .setUploadProgressHandler( function(event) { onProgress(name, event); } )
+        .setHeader( "filename", filename )
+        .setHeader( "apikey", SETTINGS.getMetascanApiKey() )
+        .send( this.ADDRESS_FILE_UPLOAD, blob );
       
-      request.send(blob);   
-    
-      this.getRequests().add(ENGINE_METASCAN, name, request);
     },
 
     
     getFileReport : function(name, checksum, callback) {
 
       // Check if Metascan is enabled...
-      if (!this.getSettings().isMetascanEnabled())
+      if (!SETTINGS.isMetascanEnabled())
         return;      
       
       // Ensure the checksum is upper case...
       checksum = checksum.toLowerCase();       
 
-      var request = new XMLHttpRequest();
-  
-      var self = this;
-      request.onload = function(e) {
-        self.getRequests().remove(ENGINE_METASCAN, checksum);
-        
-        logger.logDebug(this.responseText);        
-        
-        var response = (new MetascanFileResponse()).parse(this);
+      var onCompleted = function(response) {
+        response = (new MetascanFileResponse()).parse(response);
         callback(name, checksum, response);
       };
+      
+      var request = new net.tschmid.secondopinion.Request("GET");
   
-      request.open("GET",""+this.ADDRESS_FILE_REPORT+checksum);
-      request.setRequestHeader("apikey",this.getSettings().getMetascanApiKey());
-      
-      request.send(null);      
-      
-      this.getRequests().add(ENGINE_METASCAN, checksum, request);
-    }, 
+      request
+        .setCompletedHandler( onCompleted )
+        .setHeader( "apikey", SETTINGS.getMetascanApiKey())
+        .send( ""+this.ADDRESS_FILE_REPORT+checksum, null );      
 
-    // Api short cuts ... 
-    getSettings : function () {
-      if (!net.tschmid.secondopinion.settings)
-        throw "Failed to import settings";
-  
-      return net.tschmid.secondopinion.settings;
-    },
-  
-    getRequests : function() {
-      if (!net.tschmid.secondopinion.requests)
-        throw "Failed to import requests";
-  
-      return net.tschmid.secondopinion.requests;  
-    }
+    } 
   };
   
   if(!exports.net)
@@ -252,7 +221,7 @@
   if (!exports.net.tschmid.secondopinion.metascan)
     exports.net.tschmid.secondopinion.metascan = {};
     
-  exports.net.tschmid.secondopinion.metascan.file = new MetascanFileRequest(); 
+  exports.net.tschmid.secondopinion.metascan.FILE = new MetascanFileRequest(); 
    
   
   
@@ -265,8 +234,8 @@
   if (!exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_FILE])
     exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_FILE] = {};
     
-  exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_FILE].api 
-      = exports.net.tschmid.secondopinion.metascan.file;  
+  exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_FILE].API 
+      = exports.net.tschmid.secondopinion.metascan.FILE;  
     
   exports.net.tschmid.secondopinion.engine[ENGINE_METASCAN][ENGINE_TYPE_FILE].Report
       = MetascanFileReport;       

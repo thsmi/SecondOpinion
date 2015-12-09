@@ -74,10 +74,10 @@
         
     // Api short cuts ...   
     getSettings : function () {
-      if (!net.tschmid.secondopinion.settings)
+      if (!net.tschmid.secondopinion.SETTINGS)
         throw "Failed to import settings";
     
-      return net.tschmid.secondopinion.settings;
+      return net.tschmid.secondopinion.SETTINGS;
     }  
   };
   
@@ -90,6 +90,6 @@
   if (!exports.net.tschmid.secondopinion)
     exports.net.tschmid.secondopinion = {};
   
-  exports.net.tschmid.secondopinion.Logger = new SecondOpinionLogger();
-  
+  exports.net.tschmid.secondopinion.LOGGER = new SecondOpinionLogger();
+
 }(this));  

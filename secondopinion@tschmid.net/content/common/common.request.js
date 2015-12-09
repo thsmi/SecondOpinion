@@ -15,71 +15,118 @@
 "use strict";
 
 (function(exports) {
-  
-  // We have multiple and concurrent request running at the same time...
-  // ... this so we should keep track of them...
-
-  function SecondOpinionRequest() {}
-
-  SecondOpinionRequest.prototype = {	
-
-    items : {},
 	
-    add: function(prefix, name, request) {
-      
-      var self = this;
-	  
-	    if (Array.isArray(name)) {
-	      name.forEach( function(item) { self.add(prefix, item, request);} );
-		    return;
-	    }
+	/* global XMLHttpRequest */
+	/* global net */
+  	
+	function SecondOpinionRequest(type) {
 		
-      this.abort(name);
-      
-      if(!this.items[prefix])
-        this.items[prefix] = {};
-      
-      this.items[prefix][name] = request;  
-    },
+	  this._type = type;
+	  this._headers = {};
+	}
 
-    remove : function(prefix, name) {
-      
-      var self = this;
-		
-	    if (Array.isArray(prefix, name)) {
-	      name.forEach( function(item) { self.remove(item);} );
-		    return;
-	    }		
-		
-      if (!this.items[prefix])
-        return;
-
-      delete this.items[prefix][name];	  
-	  },
+  SecondOpinionRequest.prototype._createXMLHttpRequest
+    = function() {
+    return new XMLHttpRequest();
+  };	
 	
-	  abort: function(prefix, name) {
-      
-	    if ( (typeof(prefix) === "undefined") && (typeof(name) === "undefined") ) {
-        
-        for (prefix in this.items)
-          for (name in this.items[prefix])
-            this.abort(prefix, name);      
-      }
+	SecondOpinionRequest.prototype.setUploadProgressHandler
+	  = function( progressHandler) {
 
-      if (!this.items[prefix] || !this.items[prefix][name])
-        return;
-      
-      this.items[prefix][name].abort();
-	    this.remove(prefix, name);
-	  },
+	  this._onUploadProgress = progressHandler;
+	  return this;
+	};
 	
-	  /**
-	    * a reset call aborts all pending requests.
-	    **/
-	  reset : function() {
-	    this.abort();
-	  }
+  SecondOpinionRequest.prototype.setCompletedHandler
+    = function( completedHandler ) {
+
+    this._onCompletedListener = completedHandler;
+    return this;
   };
+  
+  SecondOpinionRequest.prototype.setHeader
+    = function( name, value) {
+    	
+    this._headers[name] = value;
+    return this;
+  };
+ 
+
+  SecondOpinionRequest.prototype.send
+    = function(url, data) {
+    
+    var request = this._createXMLHttpRequest();
+ 
+    request.open(this._type, url);
+    
+    var that = this;
+    
+    // Add event listeners...
+    request.onload = function( ) {
+      
+    	net.tschmid.secondopinion.SESSION.remove(request);
+      
+      net.tschmid.secondopinion.LOGGER
+        .logDebug(this.responseText);
+      
+      if (that._onCompletedListener)
+        that._onCompletedListener(this);
+    };   
+    
+    if (this._onProgressListener) 
+      request.onprogress = this._onProgresListener;
+    
+    for (var key in this._headers)
+      request.setRequestHeader(key, this._headers[key]);
+    	
+    request.send(data);
+    
+    net.tschmid.secondopinion.SESSION.add(request);
+  };
+
+  // In case the user switches between mails we need to cancel all 
+  // existing request otherwise they could queue up. 
+  // But as we have multiple and concurrent request 
+  // running at the same time we need to keep track of them.
+
+  function SecondOpinionSession() {
+  	
+    this._items = new Set();
+  }
+  
+  SecondOpinionSession.prototype.reset
+    = function() {
+  
+    // Abort should be called exaclty once. 
+    // Thus we rotate the buffers as first step 
+    var tmp = this._items;
+    this._items = new Set();
+    
+    tmp.forEach(function(item) {
+    	item.abort();
+    });
+    
+    tmp.clear();
+    
+    return this;
+  };
+  
+  SecondOpinionSession.prototype.add
+    = function(request) {
+    
+    this._items.add(request);
+    
+    return this;
+  };
+  
+  SecondOpinionSession.prototype.remove
+    = function(request) {
+    this._items.delete(request);
+    
+    return this;
+  }; 
+  
+	
 
   if (!exports.net)
     exports.net = {};
@@ -91,6 +138,7 @@
     exports.net.tschmid.secondopinion = {};  
   
   // Export an instance to the global Scope  
-  exports.net.tschmid.secondopinion.requests = new SecondOpinionRequest(); 
+  exports.net.tschmid.secondopinion.SESSION = new SecondOpinionSession();
+  exports.net.tschmid.secondopinion.Request = SecondOpinionRequest; 
    
 }(this));

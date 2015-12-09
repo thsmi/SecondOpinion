@@ -155,7 +155,7 @@
   };
   
   if(!exports)
-    throw "No Exports";
+    throw "No Exports found";
   
   if (!exports.net)
     exports.net = {};  
@@ -167,8 +167,7 @@
     exports.net.tschmid.secondopinion = {};
     
   
-  // Export an instance to the global Scope  
-  exports.net.tschmid.secondopinion.settings = new SecondOpinionSettings();
-  exports.net.tschmid.secondopinion.Settings = new SecondOpinionSettings();
- 
+  // Export an instance to the global Scope
+  exports.net.tschmid.secondopinion.SETTINGS = new SecondOpinionSettings();
+   
 }(this));

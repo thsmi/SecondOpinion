@@ -30,10 +30,10 @@ if (!net.tschmid.secondopinion.ui)
   /* global gMessageListeners */
   /* global currentAttachments */
   
-  if (!net.tschmid.secondopinion.settings)
-    throw "Failed to import settings";
+  if (!net.tschmid.secondopinion.SETTINGS)
+    throw "Failed to import SETTINGS";
   
-  var settings = net.tschmid.secondopinion.settings;  
+  var SETTINGS = net.tschmid.secondopinion.SETTINGS;  
  
   
   function SecondOpinionFileUi() {}
@@ -157,7 +157,7 @@ if (!net.tschmid.secondopinion.ui)
       if (!report.hasReport()) {
         this.getLogger().logDebug("Unknown hash "+filename+" is valid");
         
-        if (!settings.isUnknownHashSafe())
+        if (!SETTINGS.isUnknownHashSafe())
           this.getMessageApi().showUnknownFileMessage(filename);
         
         return;
@@ -230,10 +230,10 @@ if (!net.tschmid.secondopinion.ui)
     },
     
     getCache : function() {
-       if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.Cache)
+       if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.CACHE)
         throw "Failed to import cache";
     
-      return net.tschmid.secondopinion.Cache;
+      return net.tschmid.secondopinion.CACHE;
     },
     
     getFileEngines : function() {
@@ -254,10 +254,10 @@ if (!net.tschmid.secondopinion.ui)
         if (!engine[2])
           return;
           
-        if (!engine[2].api)
+        if (!engine[2].API)
           return;
           
-        engines.push(engine[2].api);
+        engines.push(engine[2].API);
       });
       
       if (!engines.length)
@@ -274,10 +274,10 @@ if (!net.tschmid.secondopinion.ui)
     },  
     
     getLogger : function() {
-      if (!net.tschmid.secondopinion.Logger)
+      if (!net.tschmid.secondopinion.LOGGER)
         throw "Failed to import logger";  
     
-      return net.tschmid.secondopinion.Logger;
+      return net.tschmid.secondopinion.LOGGER;
     }   
   };
   

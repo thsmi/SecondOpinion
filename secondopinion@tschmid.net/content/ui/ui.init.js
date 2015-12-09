@@ -48,13 +48,13 @@ if (!net.tschmid.secondopinion.ui)
       this.getUrlApi().load(); 
       this.getContextUi().load();      
       
-      var settings = net.tschmid.secondopinion.settings;
+      var SETTINGS = net.tschmid.secondopinion.SETTINGS;
       var links = net.tschmid.secondopinion.ui.links;
-      if (settings.isAwareOfTermsOfService())
+      if (SETTINGS.isAwareOfTermsOfService())
         return;
         
       links.openUrlInTab("https://www.virustotal.com/en/about/terms-of-service/");
-      settings.setAwareOfTermsOfService(); 
+      SETTINGS.setAwareOfTermsOfService(); 
       
     },
 
@@ -70,7 +70,7 @@ if (!net.tschmid.secondopinion.ui)
     onStartHeaders: function() {      
       // Headers are only loaded when the message changes...        
       // ... so drop any pending request...
-      this.getRequestApi().reset();    
+    	net.tschmid.secondopinion.SESSION.reset();  
 	    this.getMessageApi().hideMessages();        
     },
       
@@ -94,14 +94,7 @@ if (!net.tschmid.secondopinion.ui)
     
       return net.tschmid.secondopinion.ui.messages;
     },  
-    
-    getRequestApi : function() {
-      if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.requests )
-        throw "Failed to import requests";
-  
-      return net.tschmid.secondopinion.requests;        
-    }, 
-    
+        
     getContextUi : function() {
       if (!net || !net.tschmid || !net.tschmid.secondopinion || !net.tschmid.secondopinion.ui || !net.tschmid.secondopinion.ui.contextmenu)
         throw "Failed to import context menu ui";
@@ -110,10 +103,10 @@ if (!net.tschmid.secondopinion.ui)
     },
     
     getLogger : function() {
-      if (!net.tschmid.secondopinion.Logger)
+      if (!net.tschmid.secondopinion.LOGGER)
         throw "Failed to import logger";  
     
-      return net.tschmid.secondopinion.Logger;
+      return net.tschmid.secondopinion.LOGGER;
     }   
   };
   
