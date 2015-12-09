@@ -1,3 +1,4 @@
 eclipse.preferences.version=1
+excluded=//*.min.js
 included=//*.js
 projectSpecificOptions=true
