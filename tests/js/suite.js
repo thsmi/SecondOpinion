@@ -115,9 +115,9 @@
     this.log("Starting test profile "+name);    
     var scripts = this.extend(name);
 	
-    scripts.push("./../js/Unit.js");
+    scripts.push("./../js/unit.js");
     scripts.push(tests[name].script);
-    scripts.push("./../js/UnitInit.js");
+    scripts.push("./../js/unitInit.js");
 	
 
     var that = this;

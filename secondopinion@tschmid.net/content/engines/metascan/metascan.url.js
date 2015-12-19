@@ -16,7 +16,6 @@
 
 (function(exports) {
   
-  /* global XMLHttpRequest */
   /* global FormData */
   /* global net */
   /* global URL */  
@@ -101,7 +100,7 @@
   MetascanUrlReport.prototype.getResource = function() {
       return this.getOrigin();
   };
-    
+  
   MetascanUrlReport.prototype.getUrl = function() {
     return this._url;
   };
@@ -109,7 +108,11 @@
   MetascanUrlReport.prototype.getOrigin = function() {
     return (new URL(this.getUrl())).origin;
   };  
-    
+  
+  MetascanUrlReport.prototype.getPrettyName = function() {
+      return this.getOrigin();
+  };  
+  
   MetascanUrlReport.prototype.getEngine = function() {
     return ENGINE_METASCAN;
   };
@@ -156,7 +159,14 @@
     
     ADDRESS_URL_REPORT  : "https://ipscan.metascan-online.com/v1/scan",
     
-  
+    _createRequest : function() {
+      return new net.tschmid.secondopinion.Request();
+    },    
+
+    _createResponse : function() {
+      return new MetascanUrlResponse();
+    },        
+    
     /**
      * Requests an Report at virus total for the given URL.
      *
@@ -180,20 +190,32 @@
       
       if (!Array.isArray(urls))        
         urls = [urls];          
-        
+      
+      if (urls.length === 0)
+        return;
+      
       address["address"] = urls;
-            
+      
+      var that = this;
       var onCompleted = function( response ) {
-        response = (new MetascanUrlResponse()).parse(response);
+        response = (that._createResponse()).parse(response);
         callback( urls, response );
       };
       
-      var request = new (net.tschmid.secondopinion.Request)("POST");
+      var request = this._createRequest();
        
       request
         .setCompletedHandler( onCompleted )
         .setHeader( "apikey", SETTINGS.getMetascanApiKey() )     
-        .send( this.ADDRESS_URL_REPORT, JSON.stringify(address) );
+        .send( "POST", this.ADDRESS_URL_REPORT, JSON.stringify(address) );
+    },
+
+    getEngine : function() {
+      return ENGINE_METASCAN;
+    },
+    
+    getType : function() {
+      return ENGINE_TYPE_URL;
     }
   };
   

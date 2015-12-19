@@ -7,14 +7,20 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   
   <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.logger.js"></script>
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.settings.js"/>
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.request.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.settings.js"></script>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.request.js"></script>
   
   <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.cache.js"></script>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/common/common.report.js"></script>
   
   <script type="application/x-javascript" src="chrome://secondopinion/content/engines/virustotal/virustotal.common.js"></script>  
   <script type="application/x-javascript" src="chrome://secondopinion/content/engines/virustotal/virustotal.file.js"></script>  
   <script type="application/x-javascript" src="chrome://secondopinion/content/engines/virustotal/virustotal.url.js"></script>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/metascan/metascan.common.js"></script>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/metascan/metascan.file.js"></script>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/metascan/metascan.url.js"></script>
   <!--<script type="application/x-javascript" src="chrome://secondopinion/content/virustotal.domain.js"/>-->
   
   <script type="application/x-javascript" src="chrome://secondopinion/content/ui/ui.link.js"/>
@@ -57,6 +63,7 @@
       </hbox>  
 
       <hbox   id="secondOpinionErrorBar" class="msgNotificationBar" align="center" hidden="true">
+        <image id="secondOpinionErrorImage" />
         <vbox flex="1" >                  
           <!-- in case of an error we display a simple dialog -->
           <hbox align="center" >
@@ -71,11 +78,32 @@
            type="arrow"
            orient="vertical"
            ignorekeys="true">
-        <hbox flex="1" align="top">
-          <label flex="1" value="&secondopinion.report.header;"/>
-        </hbox>
-        <vbox id="secondOpinionDetailUrlItems" />
-		<vbox id="secondOpinionDetailFileItems" />
+
+      	<vbox id="secondOpinionVirusTotal">
+          <label flex="1" value="&secondopinion.virustotal;" class="header"/>
+          
+          <vbox id="secondOpinionVirusTotalLoading"></vbox>
+          <vbox id="secondOpinionVirusTotalSuspicious"></vbox>
+          <vbox id="secondOpinionVirusTotalPending"></vbox>
+          <vbox id="secondOpinionVirusTotalError"></vbox>
+          <vbox id="secondOpinionVirusTotalUnknown"></vbox>
+          <vbox id="secondOpinionVirusTotalClean"></vbox>
+       
+        </vbox>
+        
+        <vbox id="secondOpinionMetascan">
+          <separator />
+
+          <label flex="1" value="&secondopinion.metascan;" class="header"/>
+
+          <vbox id="secondOpinionMetascanLoading"></vbox>
+          <vbox id="secondOpinionMetascanSuspicious"></vbox>
+          <vbox id="secondOpinionMetascanPending"></vbox>
+          <vbox id="secondOpinionMetascanError"></vbox>
+          <vbox id="secondOpinionMetascanUnknown"></vbox>
+          <vbox id="secondOpinionMetascanClean"></vbox>
+        </vbox>
+        		
       </panel>	  
     </vbox>
   </vbox> 

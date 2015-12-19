@@ -16,19 +16,39 @@
 
 "use strict";
   
+  if (!net.tschmid.secondopinion.LOGGER)
+    throw "Failed to import LOGGER";
+  
+  var LOGGER = net.tschmid.secondopinion.LOGGER;
+  
     
-  function onAttachmentLoaded(name, chunks) { 
-    net.tschmid.secondopinion.files.uploadFile(name, chunks, onUploadCompleted, onUploadProgress);
+  function onAttachmentLoaded(name, chunks) {
+  	
+  	LOGGER.logDebug("onAttachmentLoaded");
+  	
+    var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+
+    if (SETTINGS.isMetascanEnabled())
+      net.tschmid.secondopinion.metascan.FILE.uploadFile(name, chunks, onMetascanUploadCompleted, onMetascanUploadProgress);
+    
+    if (SETTINGS.isVirusTotalEnabled())
+  	  net.tschmid.secondopinion.virustotal.FILE.uploadFile(name, chunks, onVirusTotalUploadCompleted, onVirusTotalUploadProgress);
+  	
   }
 
   function scanFile(url, name) {
     
     if (!url || !name)
       return;
-  
-    document.getElementById("status").textContent 
-      = "Preparing "+name+" for upload...";
 
+    var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+      
+    document.getElementById("VirusTotalUploadStatus").textContent 
+      = ( SETTINGS.isMetascanEnabled() ?  "Preparing "+name+" for upload..." : "VirusTotal is disabled" );
+
+    document.getElementById("MetascanUploadStatus").textContent 
+      = ( SETTINGS.isMetascanEnabled() ?  "Preparing "+name+" for upload..." : "Metascan is disabled" );
+      
     net.tschmid.secondopinion.attachments.getAttachment(url, name, onAttachmentLoaded);  
   }
 
@@ -53,36 +73,65 @@
   }
 
   
-  function onUploadProgress(name, event) {
+  function onVirusTotalUploadProgress(name, event) {
+  	onUploadProgress("VirusTotal", name, event);
+  }
   
-    var elm = document.getElementById('secondOpinionUploadProgress');
-	
-    if (!event.lengthComputable) {
-	  elm.mode = 'undetermined';
-	  return;
-	}
-	
-	elm.mode = 'determined';
-	elm.value = Math.round((event.loaded / event.total)*100);	
-	
-	document.getElementById("status").textContent 
-	    = "Uploading "+name+"... "+elm.value+" %";			
-  } 
-  
-  function onUploadCompleted(name, response) {
-
+  function onVirusTotalUploadCompleted(name, response) {
+    LOGGER.logDebug("upload completed"+response.responseText);
     var resp = JSON.parse(response.responseText);
-	
+  
     var url = resp["permalink"];
+  
+    var item = document.getElementById("virusTotalFileLink");
+    item.textContent = 'View Status at VirtuTotal.com "' +name +'"';      
+    item.addEventListener("click", function() { net.tschmid.secondopinion.ui.links.openUrl(url); }, false);   
+  
+    //net.tschmid.secondopinion.CACHE.storeReport(resp["sha256"], true, url);
+  
+    document.getElementById("UploadWizard").canAdvance = true;  	
+  }
+
+  function onMetascanUploadProgress(name, event) {
+    onUploadProgress("Metascan", name, event);
+  }
+
+  function onMetascanUploadCompleted(name, response) {
+    LOGGER.logDebug("upload completed"+response.responseText);
+    var resp = JSON.parse(response.responseText);
+  
+    var url = "https://www.metascan-online.com/#!/results/file/"+resp["data_id"]+"/regular";
+    //var url = "http://"+resp["rest_ip"]+"/file/"+resp["data_id"];
+  
+    var item = document.getElementById("metascanFileLink");
+    item.textContent = 'View Status at Metascan "' +name+'"';      
+    item.addEventListener("click", function() { net.tschmid.secondopinion.ui.links.openUrl(url); }, false);   
+  
+    //net.tschmid.secondopinion.CACHE.storeReport(resp["sha256"], true, url);
+  
+    document.getElementById("UploadWizard").canAdvance = true;    
+  }
+  
+  
+  function onUploadProgress(engine, name, event) {
+    
+    var elm = document.getElementById(engine+'UploadProgress');
+    var status = document.getElementById(engine+'UploadStatus');
+        	
+  	
+    if (!event.lengthComputable) {
+	    elm.mode = 'undetermined';
+	    return;
+  	}
 	
-    var item = document.getElementById("status2");
-    item.textContent = "" +name;			
-    item.addEventListener("click", function() { net.tschmid.secondopinion.ui.links.openUrl(url); }, false);		
+	  elm.mode = 'determined';
+	  elm.value = Math.round((event.loaded / event.total)*100);	
 	
-    net.tschmid.secondopinion.CACHE.storeReport(resp["sha256"], true, url);
-	
-    document.getElementById("UploadWizard").canAdvance = true;
+	  status.textContent 
+	    = "Uploading "+name+" to "+engine+" ... "+elm.value+" %";			
   } 
+  
+
   
 
   function doCancel(){

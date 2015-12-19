@@ -76,8 +76,13 @@ if (!net.tschmid.secondopinion.ui)
     onCheckSumCalculated: function(uri, name, checksum) {
         
       this.getLogger().logDebug("Checksum "+ checksum +" calculated for "+ name);
-    
-      var self = this;    
+      
+      var self = this;  
+      
+      this.getFileEngines().forEach( function(engine) {
+        self.getMessageApi().addLoading( engine.getEngine(), checksum, name );
+      });     
+      
       var callback = function(reports) { 
         window.setTimeout(function () { self.onReportLoaded(uri, name, checksum, reports); }, 0);
       };    
@@ -87,6 +92,9 @@ if (!net.tschmid.secondopinion.ui)
     
     onReportLoaded : function (uri, filename, checksum, reports) {
 
+      var LOGGER = this.getLogger(); 
+      var MESSAGES = this.getMessageApi();
+    	
       var self = this;
       
       this.getFileEngines().forEach( function(engine, idx) {
@@ -97,12 +105,13 @@ if (!net.tschmid.secondopinion.ui)
         reports.forEach( function(item) {
           
           if (item.getEngine() !== (idx+1)) {
-            self.getLogger().logDebug("AAA Report Engine "+item.getEngine()+" and engine "+ idx);
+            LOGGER.logDebug("Report Engine "+item.getEngine()+" and engine "+ idx);
             return;
           }
             
           if (item.isPending()) {
-            self.getLogger().logDebug("AAA Report isPending "+item.isPending);
+            LOGGER.logDebug("Report isPending "+item.isPending);
+            MESSAGES.addPending(item);
             return;
           }
             
@@ -112,10 +121,11 @@ if (!net.tschmid.secondopinion.ui)
         // ... in case we found one we take a shortcut
         if (report !== null) {
           
-          self.getLogger().logDebug("Report for "+filename+" and engine "+idx+" loaded");
+          LOGGER.logDebug("Report for "+filename+" and engine "+idx+" loaded");
           
           report.setFilename(filename);
         
+          MESSAGES.addSuspicious(report);
           self.blockAttachment(uri, report);
           return;       
         }
@@ -124,63 +134,69 @@ if (!net.tschmid.secondopinion.ui)
         
         // ... otherwise we need to request a report from the server.
         var callback = function(filename, checksum, response) {
-          window.setTimeout(function () { self.onFileReportReceived(uri, filename, checksum, response); }, 0);
+          window.setTimeout(function () { self.onFileReportReceived(uri, filename, checksum, response, engine); }, 0);
         };
     
         engine.getFileReport( filename,checksum, callback );      
       });
     },
  
-    onFileReportReceived: function (uri, filename, checksum, response) {
+    onFileReportReceived: function (uri, filename, checksum, response, engine) {
     
+    	var LOGGER = this.getLogger(); 
+    	var MESSAGES = this.getMessageApi();
+    	
       if (response.getError()) {          
-        this.getMessageApi().showError(response.getError().getMessage());
+        MESSAGES.showError(response.getError().getMessage());
         return;
       }
       
       var reports = response.getReports();
       
       if (reports.length !== 1) {
-        this.getLogger().logDebug("Expected one report file but got "+ reports.length);
+        LOGGER.logDebug("Expected one report file but got "+ reports.length);
         return;
       }
       
-      this.getLogger().logDebug(reports);
+      LOGGER.logDebug(reports);
       
       var report = reports[0];
 
+      // We need to reset the name, because it may have been obfuscated
+      report.setFilename(filename);     
+      
       if (report.hasError()) {
-        this.getLogger().logDebug("Skipping report for "+filename+" is invalid.");
+        LOGGER.logDebug("Skipping report for "+filename+" is invalid.");
+      	MESSAGES.addError(report.getEngine(), checksum, filename);
         return;
       }
       
       if (!report.hasReport()) {
-        this.getLogger().logDebug("Unknown hash "+filename+" is valid");
-        
-        if (!SETTINGS.isUnknownHashSafe())
-          this.getMessageApi().showUnknownFileMessage(filename);
-        
+        LOGGER.logDebug("Unknown hash "+filename+" is valid");        
+        MESSAGES.addUnknown(report, checksum);
+          
         return;
       }
-      
-      // We need to reset the name, because it may have been obfuscated
-      report.setFilename(filename);
       
       // Still pending in queue, so we take a short cut...
       // ... and indicate we don't know this file but it's suspicious.     
       if (report.isPending()) {
+      	MESSAGES.addPending(report);
         this.blockAttachment(uri, report);
         return; 
       }
       
       
-      this.getLogger().logDebug("Storing report for "+report.getFilename()+" with "+report.getPositives()+" positives" );
+      LOGGER.logDebug("Storing report for "+report.getFilename()+" with "+report.getPositives()+" positives" );
       this.getCache().storeReport( report );
       
       // we need to intervene only if the attachment is dangerous, which means positives larger than zero         
-      if (report.getPositives() <= 0)
+      if (report.getPositives() <= 0) {
+      	MESSAGES.addClean(report);
         return; 
+      }
       
+      MESSAGES.addSuspicious(report);
       this.blockAttachment(uri, report);
     },  
      
@@ -190,8 +206,7 @@ if (!net.tschmid.secondopinion.ui)
             
       // Obviously a file is not save, we need to show a message...
       this.getAttachmentApi().blockAttachment(uri);
-      
-      this.getMessageApi().showFileMessage(report);  
+
       this.getLogger().logDebug(report.getLink()); 
     },
     
@@ -218,8 +233,8 @@ if (!net.tschmid.secondopinion.ui)
     
     openReportByHash : function (hash) {
       this.getMessageApi().openReport("https://www.virustotal.com/en/file/"+hash+"/analysis/");
-    },
-    
+      this.getMessageApi().openReport("https://www.metascan-online.com/#!/results/file/"+hash+"/regular");
+      },
     
     // Shotcuts to api calls... 
     getAttachmentApi : function() {

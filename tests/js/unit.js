@@ -89,9 +89,21 @@ net.tschmid.yautt.test.require = function(script) {
 net.tschmid.yautt.test.assertEquals = function assertEquals(expected, actual) {
 	
   if (expected != actual)
-	throw "Test failed expected: \n"+expected+"\n\nBut got\n"+actual;
+    throw new Error("Test failed expected: \n"+expected+"\n\nBut got\n"+actual);
   
   this.logTrace(" Assert Succeded "+expected);
+};
+
+net.tschmid.yautt.test.assertNotNull = function( actual ) {
+
+	if (actual === null)
+	  throw new Error("Test failed, null value expected");  
+};
+
+net.tschmid.yautt.test.assertNull = function( actual ) {
+
+  if (actual !== null)
+    throw new Error("Test failed, value should not be null");  
 };
 
 net.tschmid.yautt.test.add = function(test) {

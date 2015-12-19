@@ -39,6 +39,10 @@
 	      .getService(Ci.nsIConsoleService)
 		  .logStringMessage("[SecondOpinion "+this.getTimestamp()+"]\n"+str);		
 	  },
+	  
+	  logError : function(str) {
+	  	Components.utils.reportError(str);
+	  },
 	
     logWarn : function(str) {
 	    this.log(str, 1);

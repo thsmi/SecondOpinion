@@ -126,7 +126,6 @@
     // We have multiple and concurrent request running at the same time...
   // ... this so we should keep track of them...
 
-  // TODO Rename Response to Report
   function VirusTotalAbstractResponse() {
     this._reports = [];    
   }

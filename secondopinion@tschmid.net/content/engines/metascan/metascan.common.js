@@ -16,7 +16,6 @@
 
 (function(exports) {
   
-  /* global XMLHttpRequest */
   /* global FormData */
    
   
@@ -52,10 +51,16 @@
       return "Metascan returned an error "+this.error;
   };  
   
-    // We have multiple and concurrent request running at the same time...
+  function InvalidResponse() {
+  }
+  
+  InvalidResponse.prototype.getMessage = function() {
+      return "The server's response is invalid"; 
+  };  
+  
+  // We have multiple and concurrent request running at the same time...
   // ... this so we should keep track of them...
 
-  // TODO Rename Response to Report
   function MetascanAbstractResponse() {
     this._reports = [];    
   }
@@ -91,12 +96,18 @@
       
       if (this.getError())
         return this;
-            
+   
+      var reports = null;
+      try {
+      	reports = JSON.parse(response.responseText);
+      }catch (ex) {
+        this.error = new InvalidResponse();
+        return this;
+      }
+      
       // We do not use metascan multiple data hashes api it is too limited.      
-      this._reports = this.createReports(JSON.parse(response.responseText));
-      
-      //this._reports.push( this.createReport(report));
-      
+      this._reports = this.createReports(reports);
+            
       return this;
     },    
     
@@ -126,4 +137,4 @@
   // Export an instance to the global Scope  
   exports.net.tschmid.secondopinion.metascan.AbstractResponse = MetascanAbstractResponse;  
     
-}(this));  
+}(this));

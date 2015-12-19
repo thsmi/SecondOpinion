@@ -3,7 +3,7 @@
   <Description about="urn:mozilla:install-manifest">	
     <em:id>secondopinion@tschmid.net</em:id>	
     <em:name>SecondOpinion</em:name>	
-    <em:version>1.0</em:version>
+    <em:version>2.0a</em:version>
     <em:creator>Thomas Schmid</em:creator>
     <em:description>This extension implements a convenient way to check and upload attachments to VirusTotal.com </em:description>
     <em:homepageURL></em:homepageURL>
@@ -18,7 +18,7 @@
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
         <em:minVersion>37.*</em:minVersion>
-        <em:maxVersion>41.*</em:maxVersion>
+        <em:maxVersion>80.*</em:maxVersion>
       </Description>
     </em:targetApplication>
 

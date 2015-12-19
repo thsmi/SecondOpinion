@@ -21,7 +21,6 @@
 
 (function(exports) {
   
-  /* global XMLHttpRequest */
   /* global Blob */
   /* global FormData */
   /* global net */
@@ -32,12 +31,7 @@
   if (!net.tschmid.secondopinion.LOGGER)
     throw "Failed to import LOGGER";
   
-  var LOGGER = net.tschmid.secondopinion.LOGGER;  
-  
-  if (!net.tschmid.secondopinion.SETTINGS)
-    throw "Failed to import settings";
-  
-  var SETTINGS = net.tschmid.secondopinion.SETTINGS;  
+  var LOGGER = net.tschmid.secondopinion.LOGGER;    
   
   var AbstractReport = net.tschmid.secondopinion.common.AbstractReport;
   var AbstractResponse = net.tschmid.secondopinion.metascan.AbstractResponse;  
@@ -63,7 +57,9 @@
   
   
   MetascanFileReport.prototype.loadByResponse = function(report) {
-    
+  	
+    var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+  	
     var keys = Object.keys(report);
             
     if ((Object.keys(report).length === 1) && (report[Object.keys(report)[0]] === "Not Found")) {
@@ -118,7 +114,7 @@
  
 
   MetascanFileReport.prototype.getResource = function() {
-    return this._resource;
+    return this._resource.toLowerCase();
   };        
     
   MetascanFileReport.prototype.setFilename = function(filename) {
@@ -128,7 +124,11 @@
   MetascanFileReport.prototype.getFilename = function() {
     return this._filename;
   };    
-    
+
+  MetascanFileReport.prototype.getPrettyName = function() {
+    return this.getFilename();
+  };  
+  
   MetascanFileReport.prototype.getEngine = function() {
     return ENGINE_METASCAN;
   };
@@ -159,11 +159,21 @@
     //    "https://hashlookup.metascan-online.com/v2/hash/E71A6D8760B37E45FA09D3E1E67E2CD3"
     ADDRESS_FILE_REPORT : "https://hashlookup.metascan-online.com/v2/hash/",
     ADDRESS_FILE_UPLOAD : "https://scan.metascan-online.com/v2/file",
+    
+    _createRequest : function() {
+    	return new net.tschmid.secondopinion.Request();
+    },
+    
+    _createResponse : function() {
+    	return new MetascanFileResponse();
+    },
   
     // Scans the attachment urls passed.  
     uploadFile : function(name, chunks, onCompleted, onProgress) {
       
-    	if (!this.getSettins().isMetascanEnabled())
+    	var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+    	 
+    	if (!SETTINGS.isMetascanEnabled())
     	  return;
     	
       var filename = name;
@@ -173,40 +183,52 @@
       
       var blob = new Blob(chunks);    
     
-      var request = (new net.tschmid.secondopinion.Request("POST"));
+      var request = this._createRequest();
       
       request
         .setCompletedHandler( function (request) { onCompleted(name, request); } )
         .setUploadProgressHandler( function(event) { onProgress(name, event); } )
         .setHeader( "filename", filename )
         .setHeader( "apikey", SETTINGS.getMetascanApiKey() )
-        .send( this.ADDRESS_FILE_UPLOAD, blob );
+        .send( "POST", this.ADDRESS_FILE_UPLOAD, blob );
       
     },
-
     
     getFileReport : function(name, checksum, callback) {
 
+    	var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+    	 
       // Check if Metascan is enabled...
+    	// TODO moved to an engine object 
       if (!SETTINGS.isMetascanEnabled())
         return;      
       
       // Ensure the checksum is upper case...
       checksum = checksum.toLowerCase();       
 
+      var that = this;
       var onCompleted = function(response) {
-        response = (new MetascanFileResponse()).parse(response);
+        response = that._createResponse().parse(response);
         callback(name, checksum, response);
       };
       
-      var request = new net.tschmid.secondopinion.Request("GET");
+      var request = this._createRequest();
   
       request
         .setCompletedHandler( onCompleted )
         .setHeader( "apikey", SETTINGS.getMetascanApiKey())
-        .send( ""+this.ADDRESS_FILE_REPORT+checksum, null );      
+        .send( "GET", ""+this.ADDRESS_FILE_REPORT+checksum, null );      
 
-    } 
+    },
+
+    getEngine : function() {
+      return ENGINE_METASCAN;
+    },
+    
+    getType : function() {
+      return ENGINE_TYPE_FILE;
+    }
+    
   };
   
   if(!exports.net)

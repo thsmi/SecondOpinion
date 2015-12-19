@@ -27,7 +27,6 @@ if (!net.tschmid.secondopinion)
   /* global net */
   /* global URL */
   
-  /* global XMLHttpRequest */
   /* global FormData */  
   
   // Imports
@@ -65,28 +64,28 @@ if (!net.tschmid.secondopinion)
   
   VirusTotalUrlReport.prototype.loadByResponse = function(report) {
       
-    LOGGER.logDebug("URL Report"+report);   
+    LOGGER.logDebug("URL Report"+report.toSource());   
     
     VirusTotalAbstractReport.prototype.loadByResponse.call(this, report);
       
     if (!this.hasReport())
       return this;
-         
-    this._url = report["url"];
+      
+    this._url = (new URL(""+report["url"])).origin;
       
     return this;       
   };
     
   VirusTotalUrlReport.prototype.getResource = function() {
-    return this.getOrigin();
+    return this._url;
   };
     
   VirusTotalUrlReport.prototype.getUrl = function() {
     return this._url;
   };
     
-  VirusTotalUrlReport.prototype.getOrigin = function() {
-    return (new URL(this.getUrl())).origin;
+  VirusTotalUrlReport.prototype.getPrettyName = function() {
+  	return this._url;
   };
     
   VirusTotalUrlReport.prototype.getEngine = function() {
@@ -120,7 +119,15 @@ if (!net.tschmid.secondopinion)
   VirusTotalUrlRequest.prototype = {
 
     ADDRESS_URL_REPORT  : "https://www.virustotal.com/vtapi/v2/url/report",    
-   
+  
+    _createRequest : function() {
+    	return new net.tschmid.secondopinion.Request("POST");
+    },
+    
+    _createResponse : function() {
+    	return new VirusTotalUrlResponse();
+    },
+    
     /**
      * Requests an Report at virus total for the given URL.
      *
@@ -179,16 +186,16 @@ if (!net.tschmid.secondopinion)
       formData.append("scan", 1);
       formData.append("apikey", this.getSettings().getVirusTotalApiKey());
     
-    
+
       var onCompleted = function( response ) {        
-        response = (new VirusTotalUrlResponse()).parse(response);     
+        response = (that._createResponse()).parse(response);     
         callback( urls, response );
       };
     
-      var request = new net.tschmid.secondopinion.Request("POST");
+      var request = this._createRequest();
       request
         .setCompletedHandler( onCompleted )
-        .send(this.ADDRESS_URL_REPORT, formData);  
+        .send( "POST", this.ADDRESS_URL_REPORT, formData );  
         
     },   
 
@@ -197,7 +204,15 @@ if (!net.tschmid.secondopinion)
         throw "Failed to import settings";
   
       return net.tschmid.secondopinion.SETTINGS;
-    }
+    },
+    
+    getEngine : function() {
+      return ENGINE_VIRUSTOTAL;
+    },
+    
+    getType : function() {
+      return ENGINE_TYPE_URL;
+    }    
   };
    
   if(!exports.net)

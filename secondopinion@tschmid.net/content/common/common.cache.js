@@ -148,7 +148,6 @@
         if (rows.length < 1)
           return [];
                 
-        // TODO we should wrap it into a report objects instead of a raw object.  
         let results = [];
         
         rows.forEach( function(item) {          

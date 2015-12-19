@@ -32,34 +32,33 @@ if (!net.tschmid.secondopinion.ui)
   function SecondOpinionMessagesUi() {}
 
   SecondOpinionMessagesUi.prototype = {
+  	
+    state : 0,
       
-	hideMessages : function() {
-    this.clearMessages();
-	  this.hideWarnings();
-	  this.hideErrors();
-	  
-	  document.getElementById("secondOpinionBar").hidden = true;
-    //document.getElementById("secondOpinionDetail").hidden = true;
-    
-    document.getElementById("secondOpinionUnknownHeader").hidden = true;
-    document.getElementById("secondOpinionDangerousHeader").hidden = true;
-    
-	},
+  	hideMessages : function() {
+  	
+      this.clearMessages();
+	    
+	    this.hideWarnings();
+	    this.hideErrors();
+
+	    document.getElementById("secondOpinionBar").hidden = true;
+      //document.getElementById("secondOpinionDetail").hidden = true;
+	  },
 	  
     hideWarnings : function() {
       document.getElementById("secondOpinionWarningBar").hidden = true;
-      document.getElementById("secondOpinionWarningBarDeck").selectedIndex = "1";
     },
 	
     hideErrors : function() {
       document.getElementById("secondOpinionErrorBar").hidden = true;
-    },		  
+    },
 	  
     showError: function(message) {
       document.getElementById("secondOpinionBar").hidden = false;     
       document.getElementById("secondOpinionErrorBar").hidden = false;
       document.getElementById("secondOpinionError").value = message;
-    },  
+    },
   
     showWarning : function(parent, name, permalink, positives, total) {
       
@@ -79,64 +78,181 @@ if (!net.tschmid.secondopinion.ui)
 
       document.getElementById("secondOpinionWarningBar").hidden = false;
       document.getElementById("secondOpinionBar").hidden = false;
-      document.getElementById("secondOpinionWarningBarDeck").selectedIndex = "0";
       
-      document.getElementById("secondOpinionDangerousHeader").hidden = false;
     },
-  
-    showUrlMessage : function(report) {
+    
+    _getEngine : function( engine ) {
+    	
+    	if (engine.getEngine)
+    	  engine = engine.getEngine();
+    	
+      if (engine === 1)
+        return "VirusTotal";
         
-      var parent = document.getElementById("secondOpinionDetailUrlItems");
-      this.showWarning(parent, report.getUrl(), report.getLink(), report.getPositives(), report.getTotal());
+      if (engine === 2)
+        return "Metascan";
+        
+      throw new Error("Unknown engine..."+engine);
     },
     
-    showUnknownUrlMessage : function(url) {
-      var parent = document.getElementById("secondOpinionDetailUrlItems");
-      alert(url);
+    _generateId : function( engine, resource) {
+    	return window.btoa(""+engine+":"+resource);
     },
     
-    showFileMessage: function(report) {      
-      var parent = document.getElementById("secondOpinionDetailFileItems");
-      this.showWarning(parent, report.getFilename()+" "+report.getEngine(), report.getLink(), report.getPositives(), report.getTotal());
-    },  
-    
-    showUnknownFileMessage : function(filename) {      
-      var parent = document.getElementById("secondOpinionDetailUnknownFileItems");
+    _addItem2 : function(parent, id, desc, link) {
+
+    	if (!parent)
+        throw new Error( "No parent element passed");
+        
+    	// Remove any existing element, in case an elemet changes from
+      // pending to clean, unkown or unsafe
+      var elm = document.getElementById(id);
+      if (elm)
+        elm.parentNode.removeChild(elm);
+      
+      var self = this;
       
       var item = document.createElement("label");
-      item.setAttribute("value",""+filename+" ( unknow )");
-      //item.setAttribute("class", "text-link");
-      parent.appendChild(item);
+      item.setAttribute( "id", id);
+      item.setAttribute( "value", desc );
       
+      
+      if (link) {
+      	item.setAttribute( "class", "text-link" );
+      	item.addEventListener("click", function() { self.openReport( link ); }, false);
+      }
+        
+      parent.appendChild(item);
+   	
+    },
+    
+    _addItem : function(type, report, desc) {
+    	
+    	var engine = this._getEngine( report ); 	
+    	var parent = document.getElementById( "secondOpinion"+engine+type);
+    	
+    	var id = this._generateId(engine, report.getResource()); 
+ 
+    	this._addItem2(parent, id, desc, report.getLink());
+    	
+    	
+    },
+
+    _showWarningBar : function () {
       document.getElementById("secondOpinionWarningBar").hidden = false;
       document.getElementById("secondOpinionBar").hidden = false;
-      
-      document.getElementById("secondOpinionUnknownHeader").hidden = false;      
     },
-       
-    clearFileMessages : function() {
-      var elm = document.getElementById("secondOpinionDetailFileItems");
-      while (elm.hasChildNodes())
-        elm.removeChild(elm.firstChild);      
+  
+    addSuspicious : function( report ) {
+
+    	if (!report.getResource)
+    	  throw new Error("Report"+report.toSource());
+    	
+    	var desc = "" + report.getPrettyName() + " ("+report.getPositives()+"/"+report.getTotal()+")";
+      this._addItem( "Suspicious", report, desc);
       
-      elm = document.getElementById("secondOpinionDetailUnknownFileItems");
-      while (elm.hasChildNodes())
-        elm.removeChild(elm.firstChild);        
+      this._showWarningBar();
     },
     
-    clearUrlMessages : function() {
-      var elm = document.getElementById("secondOpinionDetailUrlItems");
+    addPending : function( report ) {
+    	
+    	var desc = "" + report.getPrettyName() + " ( pending... )";
+    	this._addItem( "Pending", report, desc );
+    	
+    	this._showWarningBar();
+    },
+    
+    _addItem3 : function(type, engine, resource, desc) {
+    	
+    	engine = this._getEngine( engine ); 
+    	
+    	var parent = document.getElementById( "secondOpinion"+engine+type);
+      var id = this._generateId(engine, resource); 
+      
+      this._addItem2(parent, id, desc); 
+      
+      
+    },
+        
+    addError : function( engine, resource, prettyName ) {
+    	
+    	if (typeof(prettyName) === "undefined")
+    	  prettyName = resource;
+    	  
+    	var desc = "" + prettyName + " ( error )";
+    	this._addItem3( "Error", engine, resource, desc );
+    	
+    	this._showWarningBar();
+    },
+    
+    addUnknown : function( report, resource ) {
+
+      var engine = this._getEngine( report.getEngine() ); 
+      var parent = document.getElementById( "secondOpinion"+engine+"Loading");
+
+      var id = this._generateId(engine, resource); 
+      
+      var desc = "" + report.getPrettyName() + " ( unknown )";    
+      
+      this._addItem2(parent, id, desc); 
+ 
+      var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+      
+      if (!SETTINGS.isUnknownResourceSafe())
+    	  this._showWarningBar();
+    },
+    
+    addClean : function ( report ) {
+    	
+    	var desc = "" + report.getPrettyName() + " ( Probably harmless )";
+    	this._addItem( "Clean", report, desc );
+    },
+    
+    addLoading : function ( engine, resource, prettyName)  {
+    
+    	engine = this._getEngine( engine ); 
+    	var parent = document.getElementById( "secondOpinion"+engine+"Loading");
+    	    	
+      var id = this._generateId(engine, resource); 
+      
+      if (typeof(prettyName) === "undefined")
+        prettyName = resource;
+        
+      var desc = ""+prettyName+" ( waiting for result ...)";
+ 
+      this._addItem2(parent, id, desc); 
+    }, 
+    
+    _clearChildren : function(id) {
+      var elm = document.getElementById(id);
       while (elm.hasChildNodes())
         elm.removeChild(elm.firstChild);
-        
-      elm = document.getElementById("secondOpinionDetailUnknownUrlItems");
-      while (elm.hasChildNodes())
-        elm.removeChild(elm.firstChild);        
     },
-    
+           
     clearMessages : function() {
-      this.clearFileMessages();
-      this.clearUrlMessages();
+
+    	var elm = null;
+      var SETTINGS = net.tschmid.secondopinion.SETTINGS;
+    	
+    	elm = document.getElementById("secondOpinionVirusTotal");
+    	elm.hidden = !SETTINGS.isVirusTotalEnabled();
+    	
+    	elm = document.getElementById("secondOpinionMetascan");
+    	elm.hidden = !SETTINGS.isMetascanEnabled();
+    	
+      this._clearChildren("secondOpinionVirusTotalSuspicious");
+      this._clearChildren("secondOpinionVirusTotalPending");
+      this._clearChildren("secondOpinionVirusTotalError");
+      this._clearChildren("secondOpinionVirusTotalUnknown");
+      this._clearChildren("secondOpinionVirusTotalClean");
+      this._clearChildren("secondOpinionVirusTotalLoading");
+
+      this._clearChildren("secondOpinionMetascanSuspicious");
+      this._clearChildren("secondOpinionMetascanPending");
+      this._clearChildren("secondOpinionMetascanError");
+      this._clearChildren("secondOpinionMetascanUnknown");
+      this._clearChildren("secondOpinionMetascanClean");  
+      this._clearChildren("secondOpinionMetascanLoading");
     },
     
 	

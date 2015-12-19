@@ -1,4 +1,29 @@
 var tests = {
-
-
+  
+  "metascan.common" : {
+    "script" : "./metascan/metascan.common.test.js",
+    "require" : [
+      "./../../secondopinion@tschmid.net/content/engines/metascan/metascan.common.js" ]
+  },
+  
+  "metascan.file" : {
+    "script" : "./metascan/metascan.file.test.js",
+    "require" : [
+      "./mocks/mock.js",
+      "./mocks/logger.mock.js",
+      "./../../secondopinion@tschmid.net/content/engines/common/common.report.js",
+      "./../../secondopinion@tschmid.net/content/engines/metascan/metascan.common.js",
+      "./../../secondopinion@tschmid.net/content/engines/metascan/metascan.file.js"
+    ]
+  },
+  
+  "common.request" : {
+    "script" : "./common/common.request.test.js",
+    "require" : [
+      "./mocks/mock.js",
+      "./mocks/logger.mock.js",
+      "./../../secondopinion@tschmid.net/content/common/common.request.js"
+    ]
+  }
+ 
 }

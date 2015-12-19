@@ -145,12 +145,12 @@
     /**
      * By default here the hash is unknown files are considered as safe. 
      */
-    isUnknownHashSafe : function() {
-      /*var pref = Cc["@mozilla.org/preferences-service;1"]
+    isUnknownResourceSafe : function() {
+    	
+      var pref = Cc["@mozilla.org/preferences-service;1"]
                   .getService(Ci.nsIPrefBranch);
             
-      return pref.getIntPref("extensions.secondopinion.unknown");*/
-      return false;
+      return pref.getBoolPref("extensions.secondopinion.isUnknownResourceSafe");
     }
   };
   

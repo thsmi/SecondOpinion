@@ -25,10 +25,10 @@ if (!net.tschmid.secondopinion)
 (function(exports) {
   
   /* global net */
-  /* global XMLHttpRequest */
   /* global File */
   /* global FormData */  
   
+  	
   // Imports
   var VirusTotalAbstractReport = net.tschmid.secondopinion.virustotal.AbstractReport;  
   var AbstractResponse = net.tschmid.secondopinion.virustotal.AbstractResponse;  
@@ -86,6 +86,10 @@ if (!net.tschmid.secondopinion)
   VirusTotalFileReport.prototype.getFilename = function() {
     return this._filename;
   };    
+  
+  VirusTotalFileReport.prototype.getPrettyName = function() {
+  	return this.getFilename();
+  };
     
   VirusTotalFileReport.prototype.getEngine = function() {
     return ENGINE_VIRUSTOTAL;
@@ -120,61 +124,74 @@ if (!net.tschmid.secondopinion)
     ADDRESS_FILE_UPLOAD : "https://www.virustotal.com/vtapi/v2/file/scan",
     ADDRESS_FILE_REPORT : "https://www.virustotal.com/vtapi/v2/file/report",
   
+    _createRequest : function() {
+      return new net.tschmid.secondopinion.Request();
+    },
+    
+    _createResponse : function() {
+      return new VirusTotalFileResponse();
+    },    
+    
     // Scans the attachment urls passed.  
     uploadFile : function(name, chunks, onCompleted, onProgress) {
 
+   	  var SETTINGS = net.tschmid.secondopinion.SETTINGS;   
+
       // Check if VirusTotal is enabled...
-      if (!this.getSettings().isVirusTotalEnabled())
+      if (!SETTINGS.isVirusTotalEnabled())
         return;
         
       var filename = name;
 
-      if (this.getSettings().isNameObfuscated())
+      if (SETTINGS.isNameObfuscated())
         filename = Math.random().toString(36).slice(2);
       
       var blob = new File(chunks, filename, { type: "application/octet-stream"} );
     
       var formData = new FormData();  
       formData.append("file", blob);
-      formData.append("apikey",this.getSettings().getVirusTotalApiKey());
+      formData.append("apikey",SETTINGS.getVirusTotalApiKey());
     
-      var request = (new net.tschmid.secondopinion.Request("POST"));
+      var request = this._createRequest();
     
       request
         .setCompletedHandler( function (response) { onCompleted(name, response); })
         .setUploadProgressHandler( function(event) { onProgress(name, event); } )
-        .send(this.ADDRESS_FILE_UPLOAD, formData);       
+        .send( "POST", this.ADDRESS_FILE_UPLOAD, formData );       
     },
 
     getFileReport : function(name, checksum, callback) {
   
+    	var SETTINGS = net.tschmid.secondopinion.SETTINGS;    
+
       // Check if VirusTotal is enabled...
-      if (!this.getSettings().isVirusTotalEnabled())
+      if (!SETTINGS.isVirusTotalEnabled())
         return;
       
       var formData = new FormData();
-      formData.append("resource",checksum);
-      formData.append("apikey",this.getSettings().getVirusTotalApiKey());
+      formData.append( "resource", checksum );
+      formData.append( "apikey", SETTINGS.getVirusTotalApiKey() );
 
+      var that = this;
       var onCompleted = function(response) {
-        response = (new VirusTotalFileResponse()).parse(response); 
+        response = (that._createResponse()).parse(response); 
         callback( name, checksum, response );
       };
 
-      var request = (new net.tschmid.secondopinion.Request("POST"));
+      var request = this._createRequest();
 
       request
         .setCompletedHandler( onCompleted )
-        .send( this.ADDRESS_FILE_REPORT, formData );
+        .send( "POST", this.ADDRESS_FILE_REPORT, formData );
         
-    }, 
+    },
 
-    // Api short cuts ... 
-    getSettings : function () {
-      if (!net.tschmid.secondopinion.SETTINGS)
-        throw "Failed to import settings";
-  
-      return net.tschmid.secondopinion.SETTINGS;
+    getEngine : function() {
+      return ENGINE_VIRUSTOTAL;
+    },
+    
+    getType : function() {
+      return ENGINE_TYPE_FILE;
     }
   };
   
@@ -190,8 +207,8 @@ if (!net.tschmid.secondopinion)
   if (!exports.net.tschmid.secondopinion.virustotal)
     exports.net.tschmid.secondopinion.virustotal = {};
     
-  exports.net.tschmid.secondopinion.virustotal.file = new VirusTotalFileRequest(); 
-   
+  exports.net.tschmid.secondopinion.virustotal.FILE = new VirusTotalFileRequest(); 
+  exports.net.tschmid.secondopinion.virustotal.file = exports.net.tschmid.secondopinion.virustotal.FILE;
   
   
   if (!exports.net.tschmid.secondopinion.engine)

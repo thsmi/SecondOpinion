@@ -44,9 +44,13 @@
        
   <setting pref="extensions.secondopinion.obfuscate" 
            type="bool" title="&secondopinion.obfuscate;"
-		   desc="&secondopinion.obfuscate.desc;" />
+		       desc="&secondopinion.obfuscate.desc;" />
        
   <setting pref="extensions.secondopinion.excluded" 
            type="string" title="Engines to exclude" 
-		   desc="A semicolon separated list with engine names which should be ignored. "/>       
+		       desc="A semicolon separated list with engine names which should be ignored. "/>       
+
+  <setting pref="extensions.secondopinion.isUnknownResourceSafe" 
+           type="bool" title="Consider Unknown Resources as safe"
+           desc="By deafult unknown resources are considered as safe. " />
 </vbox>

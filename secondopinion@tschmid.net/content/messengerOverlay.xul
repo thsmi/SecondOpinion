@@ -46,32 +46,18 @@
     <vbox  id="secondOpinionBar" insertafter="msgNotificationBar" hidden="true">      
       <hbox   id="secondOpinionWarningBar" class="msgNotificationBar" align="center" hidden="true">
         <vbox flex="1" >
-          <deck id="secondOpinionWarningBarDeck">
             
-            <!-- in case the attachment is dangerous we display a notification bar -->
-            <hbox flex="1">
-              <image id="secondOpinionWarningBarImage" />
-              <vbox flex="1">
-                <description flex="1" class="msgNotificationBarText">&secondopinion.warning.header;</description>       
-                <label id="secondOpinionWarning" class="msgNotificaton-smallText text-link" 
-                       value="&secondopinion.warning.detail;" 
-                       onclick="secondOpinion.showDetails(event.clientX - event.target.boxObject.x, event.clientY - event.target.boxObject.y);"/>
-              </vbox>
-            </hbox>
-          
-            <!-- in case the attachment is unknown we display a notification bar -->
-            <hbox flex="1">
-              <image id="secondOpinionUnknownImage" />
-              <vbox flex="1">
-                <description flex="1" class="msgNotificationBarText">"Unknown files blub blub blub...</description>       
-                <label id="secondOpinionUnknown" class="msgNotificaton-smallText text-link" 
-                       value="&secondopinion.warning.detail;" 
-                       onclick="secondOpinion.showDetails(event.clientX - event.target.boxObject.x, event.clientY - event.target.boxObject.y);"/>
-              </vbox>
-            </hbox>                 
-          
-          </deck>       
-          
+          <!-- in case the attachment is dangerous we display a notification bar -->
+          <hbox flex="1">
+            <image id="secondOpinionWarningBarImage" />
+            <vbox flex="1">
+              <description flex="1" class="msgNotificationBarText">&secondopinion.warning.header;</description>       
+              <label id="secondOpinionWarning" class="msgNotificaton-smallText text-link" 
+                     value="&secondopinion.warning.detail;" 
+                     onclick="secondOpinion.showDetails(event.clientX - event.target.boxObject.x, event.clientY - event.target.boxObject.y);"/>
+            </vbox>
+          </hbox>
+                         
         </vbox>
         <button label="&secondopinion.warning.hide;" oncommand="secondOpinion.hideWarnings()"/>   
       </hbox>  
@@ -93,17 +79,31 @@
            type="arrow"
            orient="vertical"
            ignorekeys="true">
-      <!--  <hbox flex="1" align="top">
-          <label flex="1" value="&secondopinion.report.header;"/>
-        </hbox>-->
+      	
+      	<vbox id="secondOpinionVirusTotal">
+          <label flex="1" value="&secondopinion.virustotal;" class="header"/>
+          
+          <vbox id="secondOpinionVirusTotalLoading"></vbox>
+          <vbox id="secondOpinionVirusTotalSuspicious"></vbox>
+          <vbox id="secondOpinionVirusTotalPending"></vbox>
+          <vbox id="secondOpinionVirusTotalError"></vbox>
+          <vbox id="secondOpinionVirusTotalUnknown"></vbox>
+          <vbox id="secondOpinionVirusTotalClean"></vbox>
         
-        <label id="secondOpinionDangerousHeader" value="Threats found" />
-        <vbox id="secondOpinionDetailUrlItems" />
-        <vbox id="secondOpinionDetailFileItems" />
+        </vbox>
         
-        <label id="secondOpinionUnknownHeader" value="Unknown" />
-        <vbox id="secondOpinionDetailUnknownUrlItems" />
-        <vbox id="secondOpinionDetailUnknownFileItems" />
+        <vbox id="secondOpinionMetascan">
+        	<separator />
+        	
+          <label flex="1" value="&secondopinion.metascan;" class="header"/>
+
+          <vbox id="secondOpinionMetascanLoading"></vbox>
+          <vbox id="secondOpinionMetascanSuspicious"></vbox>
+          <vbox id="secondOpinionMetascanPending"></vbox>
+          <vbox id="secondOpinionMetascanError"></vbox>
+          <vbox id="secondOpinionMetascanUnknown"></vbox>
+          <vbox id="secondOpinionMetascanClean"></vbox>
+        </vbox>
         
       </panel>    
     </vbox>

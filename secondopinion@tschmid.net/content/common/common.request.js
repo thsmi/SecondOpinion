@@ -19,9 +19,7 @@
 	/* global XMLHttpRequest */
 	/* global net */
   	
-	function SecondOpinionRequest(type) {
-		
-	  this._type = type;
+	function SecondOpinionRequest() {
 	  this._headers = {};
 	}
 
@@ -33,7 +31,7 @@
 	SecondOpinionRequest.prototype.setUploadProgressHandler
 	  = function( progressHandler) {
 
-	  this._onUploadProgress = progressHandler;
+	  this._onProgressListener = progressHandler;
 	  return this;
 	};
 	
@@ -53,11 +51,11 @@
  
 
   SecondOpinionRequest.prototype.send
-    = function(url, data) {
+    = function(type, url, data) {
     
     var request = this._createXMLHttpRequest();
  
-    request.open(this._type, url);
+    request.open(type, url);
     
     var that = this;
     
@@ -74,7 +72,7 @@
     };   
     
     if (this._onProgressListener) 
-      request.onprogress = this._onProgresListener;
+      request.upload.onprogress = this._onProgressListener;
     
     for (var key in this._headers)
       request.setRequestHeader(key, this._headers[key]);
@@ -82,6 +80,8 @@
     request.send(data);
     
     net.tschmid.secondopinion.SESSION.add(request);
+    
+    return this;
   };
 
   // In case the user switches between mails we need to cancel all 
@@ -111,9 +111,17 @@
     return this;
   };
   
+  SecondOpinionSession.prototype.size
+    = function() {
+    return this._items.size;
+  };
+  
   SecondOpinionSession.prototype.add
     = function(request) {
     
+    if (!request.abort)
+      throw "Invalid request object";
+    	
     this._items.add(request);
     
     return this;

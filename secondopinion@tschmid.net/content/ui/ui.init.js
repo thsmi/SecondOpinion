@@ -67,11 +67,15 @@ if (!net.tschmid.secondopinion.ui)
     // Implement the Message Listener interfaces. It notifies 
     // us every time a new Message is loaded and when all attachments
     // are loaded.
-    onStartHeaders: function() {      
-      // Headers are only loaded when the message changes...        
-      // ... so drop any pending request...
-    	net.tschmid.secondopinion.SESSION.reset();  
-	    this.getMessageApi().hideMessages();        
+    onStartHeaders: function() {
+    	try {
+        // Headers are only loaded when the message changes...        
+        // ... so drop any pending request...
+    	  net.tschmid.secondopinion.SESSION.reset();  
+	      this.getMessageApi().hideMessages();
+    	} catch (ex) {
+    		this.getLogger().logError(ex);
+    	}
     },
       
     getUrlApi : function() {

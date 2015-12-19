@@ -104,62 +104,88 @@ if (!net.tschmid.secondopinion.ui)
       var formNodes = document.getElementById('messagepane').contentDocument.querySelectorAll("form[action]");
       for (index = 0; index < formNodes.length; index++)
         this.sanitizeUrl(formNodes[index].action, urls);
-            
+
+      var self = this;        
+        
       // Convert the set into an array...
       var items = [];
       urls.forEach(function (item) { items.push(item); } );
       
-      var self = this;    
+      // Prefill the UI with loading messages...
+      this.getUrlEngines().forEach( function(engine) {
+      	items.forEach( function (item) {
+          self.getMessageApi().addLoading( engine.getEngine(), item );
+      	});
+      });     
+      
       var callback = function(reports) { 
         window.setTimeout(function () { self.onUrlReportsLoaded(urls, reports); }, 0);
       };    
       
       this.getCache().loadReports(items, callback);       
     },        
-  
-    onUrlReportsLoaded : function (urls, reports) {
-   
-      var self = this;  
-      
-      // filter out all existing reports
-      if (reports) {
-        
-        reports.forEach( function(item) {
-            
-          self.getLogger().logDebug("URL Report loaded : "+item.toSource());
-          // In case the item is pending bail out, so that we reload the status.
-          if (item.isPending())
-            return;
-        
-          // Same applies if the count is for some reason invalid.
-          if (item.getPositives() < 0)
-            return;
-          
-          // Now we are sure the status recorded in our database is valid and ready to display.
-          // So let's remove the url from the todo list.
-          urls.delete(item.getResource());          
-          
-          // Urls with zero positives are on our white list. We can skip those..
-          if (item.getPositives() === 0)
-            return;
-        
-          self.getMessageApi().showUrlMessage(item);    
-        });
-      }
     
-      if (urls.size === 0)
-        return; 
-       
-      var callback = function(url, response) {
-        window.setTimeout(function () { self.onUrlReportReceived(url, response); } , 0);
-      };
+    getReports : function ( engine, urls, reports) {
+
+    	var MESSAGES = this.getMessageApi();
+      var LOGGER = this.getLogger();
+      var self = this;
       
-      urls = Array.from(urls.keys());
+    	// filter out all existing reports
+      if (!reports)
+        reports = [];
+ 
+      reports.forEach( function(report) {
+            
+        if (report.getEngine() !== engine.getEngine())
+          return;
+              
+        LOGGER.logDebug("URL Report loaded : "+report.toSource());
+        // In case the item is pending bail out, so that we reload the status.
+        if (report.isPending())
+          return;
+        
+        // Same applies if the count is for some reason invalid.
+        if (report.getPositives() < 0) 
+          return;
          
-      this.getUrlEngines().forEach( function(engine) {
-        engine.getUrlReport( urls, callback );
+        var idx = urls.indexOf(report.getResource());
+        if (idx === -1)
+          throw new Error(""+report.getResource()+" not contained in "+urls);
+
+        // Now we are sure the status recorded in our database is valid and ready to display.
+        // So let's remove the url from the todo list
+        urls.splice(idx,1);
+           
+        // Urls with zero positives are on our white list. We can skip those..
+        if (report.getPositives() === 0) {
+          MESSAGES.addClean(report);
+          return;
+        }
+        
+        MESSAGES.addSuspicious(report);
       });
+    
+      if (urls.lengh === 0)
+        return;
+      
+      var callback = function(url, response) {
+        window.setTimeout(function () { self.onUrlReportReceived(url, response, engine); } , 0);
+      };
+              
+      engine.getUrlReport( urls, callback );  
+    },
+
+    onUrlReportsLoaded : function (urls, reports) {
+
+      var self = this;  
+    	
+      this.getUrlEngines().forEach( function(engine) {      	
+      	self.getReports(engine, Array.from(urls.keys()), reports);
+     });
     },  
+    
+    
   
     /**
 	   * Opens the report for the given url in the default webbrowser.
@@ -221,6 +247,8 @@ if (!net.tschmid.secondopinion.ui)
 	 **/
     sanitizeUrl : function(href, urls) {
          
+    	var LOGGER = this.getLogger();
+    	
       if (!href)
         return;
   
@@ -231,10 +259,10 @@ if (!net.tschmid.secondopinion.ui)
           return;
 
         // we drop the credentials, the search as well as the hash, as they may transport confidential information
-		if (urls)
-		  urls.add(url.origin/* +"/"+ url.pathname*/);
+		    if (urls)
+		      urls.add(url.origin/* +"/"+ url.pathname*/);
 	  
-	    return url.origin;
+	      return url.origin;
       }
       catch (e) {
         // We might fail here in case the url is invalid...
@@ -243,10 +271,14 @@ if (!net.tschmid.secondopinion.ui)
       return;
     },
   
-    onUrlReportReceived: function (url, response) {
-        
+    onUrlReportReceived: function (urls, response, engine) {
+
+    	var MESSAGES = this.getMessageApi();
+    	var LOGGER = this.getLogger();
+    	var CACHE = this.getCache();
+    	
       if (response.getError()) {          
-        this.getMessageApi().showError(response.getError().getMessage());
+        MESSAGES.showError(response.getError().getMessage());
         return;
       }
 
@@ -255,38 +287,55 @@ if (!net.tschmid.secondopinion.ui)
       var that = this;
       
       reports.forEach(function (report) {
-        
-        if (report.hasError()){
-          that.getLogger().logDebug("Skipping report has errors");
+
+      	var idx = urls.indexOf(report.getResource());
+      	
+      	if (idx !== -1)
+      	  urls.splice(idx,1);
+      	
+        if ( report.hasError() ){
+        	
+        	if (report.getResource() !== "")
+        	  MESSAGES.addError(report.getEngine(), report.getResource(), report.getPrettyName());
+        	  
+        	LOGGER.logDebug("Skipping report has errors"+report.getResource());
           return;
         }
         
         if (!report.hasReport()) {
-          that.getLogger().logDebug("Unknown url");
-        
-          if (!that.getSettings().isUnknownHashSafe())
-            this.getMessageApi().showUnknownUrlMessage("Url");
-        
+          
+          LOGGER.logDebug("Unknown url");
+          MESSAGES.addUnknown(report);
+
           return;
         }        
                 
         if (report.isPending()) {
-          that.getMessageApi().showUrlMessage(report);
+        	LOGGER.logDebug("Pending url");
+          MESSAGES.addPending(report);
           return;        
         }
         
         // Update the database, it may clear any attachments marked as pending...
-        that.getCache().storeReport( report, true );
+        CACHE.storeReport( report, true );
 
         // we need to intervene only if the attachment is dangerous, which means positives larger than zero         
-        if (report.getPositives() <= 0)
+        if (report.getPositives() <= 0) {
+        	LOGGER.logDebug("Clean");
+        	MESSAGES.addClean(report);
           return;
+        }
           
         // Obviously a file is not safe, we need to show a message...
-        that.getMessageApi().showUrlMessage(report);
+        MESSAGES.addSuspicious(report);
     
         return;          
       });       
+      
+      urls.forEach( function(url) {
+      	LOGGER.logDebug("No Report for "+url);
+        MESSAGES.addError(engine, url);
+      });
       
     },   
  

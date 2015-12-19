@@ -1,16 +1,17 @@
-<!ENTITY secondopinion.warning.header   "VirusTotal.com indicates this message contains dangerous attachments">
+<!ENTITY secondopinion.warning.header   "This message contains dangerous attachments">
 <!ENTITY secondopinion.warning.detail   "Click to show scan report...">
 <!ENTITY secondopinion.warning.hide     "Hide">
 
-<!ENTITY secondopinion.attachment.scan  "Scan on VirusTotal.com" >
-<!ENTITY secondopinion.attachments.scan "Scan all on VirusTotal.com" >
+<!ENTITY secondopinion.attachment.scan  "Scan" >
+<!ENTITY secondopinion.attachments.scan "Scan all" >
 
-<!ENTITY secondopinion.attachment.open "View on VirusTotal.com" >
+<!ENTITY secondopinion.attachment.open "View Scan Report" >
 
 <!ENTITY secondopinion.report.header    "Scan Reports" >
 
-<!ENTITY secondopinion.link.open "View on VirusTotal.com" >
+<!ENTITY secondopinion.link.open "View Scan Report" >
 
+<!ENTITY secondopinion.virustotal "VirusTotal" >
 <!ENTITY secondopinion.virustotal.apikey.type "VirusTotal Api key" >
 <!ENTITY secondopinion.virustotal.apikey.type.desc 
 "A 'api key' is used to access the services at VirusTotal.com. The key defines how many request per minute are possible." >
@@ -24,6 +25,7 @@
 <!ENTITY secondopinion.virustotal.enabled "Use VirusTotal" >
 <!ENTITY secondopinion.virustotal.enabled.desc "VirusTotal.com offers free and permium scan services. The free services can be used without registration and without a private api key." >
 
+<!ENTITY secondopinion.metascan "Metascan" >
 <!ENTITY secondopinion.metascan.enabled "Use metascan" >
 <!ENTITY secondopinion.metascan.enabled.desc "Metascan offers free and premium scan services, all require a registration and a private api key." >
 
@@ -56,16 +58,16 @@ Keep in mind, all Files sent to VirusTotal.com will be shared with antivirus ven
 
 Continue if and only if you are really sure, you upload does not contain any private data." > 
 
-<!ENTITY secondopinion.upload.uploading.title "Uploading Attachment to VirusTotal.com" >
+<!ENTITY secondopinion.upload.uploading.title "Uploading Attachment to Online Scanners" >
 <!ENTITY secondopinion.upload.uploading.content
-"The upload may take some time, it depends on the attachment size, your internet connection as well as the current load at VirusTotal.com.
+"The upload may take some time, it depends on the attachment size, your internet connection as well as the current load at the scan engines.
 
 Keep in mind in case at least one scanner rates the attachment as threat it will be sent to all those scanners that do not detect the resource." >
 
 <!ENTITY secondopinion.upload.finished.title "Completed Upload" >
 <!ENTITY secondopinion.upload.finished.content
-"The attachment has been uploaded to VirusTotal.com
+"The attachment has been uploaded.
 
-It will be checked by more than 50 virus scanners. But keep in mind it may take several hours until a file is processed by all scanners and the final report is available.
+It will be checked by more than 50 virus scanners. Keep in mind it may take several hours until a file is processed by all scanners and the final report is available.
 
 Click on the link below to check the scan status:" >

@@ -5,20 +5,26 @@
 
 <wizard  title="&secondopinion.upload.title;"
   id="UploadWizard"
-        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-		buttons="cancel"
-		hideback="true"
-        ondialogcancel="return doCancel();"	>
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  buttons="cancel"
+  hideback="true"
+  ondialogcancel="return doCancel();"	>
 
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common.settings.js"/>
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common.logger.js"/>
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common.request.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.logger.js"></script>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.settings.js"></script>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.request.js"></script>
   
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common.reports.js"/> 
-  <script type="application/x-javascript" src="chrome://secondopinion/content/virustotal.file.js"/>
-  <script type="application/x-javascript" src="chrome://secondopinion/content/common.attachment.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/common/common.report.js"></script>
+
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/virustotal/virustotal.common.js"></script>  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/virustotal/virustotal.file.js"></script>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/metascan/metascan.common.js"></script>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/engines/metascan/metascan.file.js"></script>
+  
+  <script type="application/x-javascript" src="chrome://secondopinion/content/common/common.attachment.js"/>
     
-  <script type="application/x-javascript" src="chrome://secondopinion/content/ui.link.js"/>
+  <script type="application/x-javascript" src="chrome://secondopinion/content/ui/ui.link.js"/>
 
   <script type="application/x-javascript" src="chrome://secondopinion/content/uploader.js"/>
   
@@ -29,18 +35,23 @@
 	  <wizardpage label="&secondopinion.upload.uploading.title;" pack="center" onpageshow="startUpload();">
 	    <vbox>
 		  <description style="white-space: pre-line;">&secondopinion.upload.uploading.content;</description>
-          <separator/><separator/>
-          <progressmeter id="secondOpinionUploadProgress" mode="undetermined"/>
+        <separator/><separator/>
+        
+        <progressmeter id="VirusTotalUploadProgress" mode="undetermined"/>
+	      <description id="VirusTotalUploadStatus"></description>
+	      
 	      <separator/>
-	      <description id="status" >
-		</description>
+
+        <progressmeter id="MetascanUploadProgress" mode="undetermined"/>
+        <description id="MetascanUploadStatus" ></description>
 		</vbox>
 	  </wizardpage>
 
 	  <wizardpage label="&secondopinion.upload.finished.title;" pack="center" >
 	     <description style="white-space: pre-line;">&secondopinion.upload.finished.content;</description>
 		 <separator/>
-	  	 <description id="status2" class="msgNotificaton-smallText text-link" />
+	  	 <description id="virusTotalFileLink" class="msgNotificaton-smallText text-link" />
+	  	 <description id="metascanFileLink" class="msgNotificaton-smallText text-link" />
 	  </wizardpage>
 </wizard>
 

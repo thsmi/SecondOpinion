@@ -13,6 +13,8 @@
 "use strict";
 
 /* global net */
+/* global window */
+/* global document */
 
 // TODOs:
 //  * Dim Message/Attchment on Danger?

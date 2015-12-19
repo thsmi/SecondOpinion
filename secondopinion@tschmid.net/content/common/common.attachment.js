@@ -129,7 +129,7 @@
         var flags = prompts.STD_YES_NO_BUTTONS;
       
         var button = prompts.confirmEx(null, "Second Opinion - Confirm save", 
-                               "Do you really want to save the attachment?",
+                               "Do you really want to save the attachment? It is rated as dangrous.",
                                flags, "", null, "", null, check);
     
         if (button !== 0)
@@ -155,7 +155,7 @@
         var flags = prompts.STD_YES_NO_BUTTONS;
     
         var button = prompts.confirmEx(null, "Second Opinion - Confirm open", 
-                               "Do you really want to open the attachment?",
+                               "Do you really want to open the attachment? It is rated as dangrous.",
                                flags, "", null, "", null, check);
     
         if (button !== 0)

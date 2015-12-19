@@ -17,7 +17,6 @@
 (function(exports) {
    
   /* global XMLHttpRequest */
-  /* global FormData */
   
   function AbstractReport() {
 
@@ -40,7 +39,7 @@
     },
     
     getType : function() {
-      throw new Error ("Implement getType");
+      throw new Error("Implement getType");
     },
     
     getResource : function() {
